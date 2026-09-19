@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path=".env" />
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
+    <File Path="docker-compose.yml" />
     <File Path="dotnet-tools.json" />
     <File Path="Gas2s.slnx" />
     <File Path="README.md" />
