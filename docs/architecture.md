@@ -158,6 +158,29 @@ ExpenseTracker/
 └── README.md
 
 ```
+```
+
+ExpenseTracker/
+├── src/
+│   ├── Api/                              # Host, composition root, Program.cs
+│   ├── Shared/
+│   │   └── ExpenseTracker.SharedKernel/  # Result<T>, BaseEntity, common types
+│   └── Modules/
+│       ├── Identity/
+│       │   ├── Identity.Domain/          # User, RefreshToken entities
+│       │   ├── Identity.Application/     # Auth handlers, DTOs
+│       │   └── Identity.Infrastructure/  # EF config, TokenService
+│       └── Expenses/
+│           ├── Expenses.Domain/          # Expense, ExpenseCategory
+│           ├── Expenses.Application/     # CRUD + Filter handlers
+│           └── Expenses.Infrastructure/  # EF config, Repositories
+├── tests/
+│   ├── ExpenseTracker.UnitTests/
+│   └── ExpenseTracker.IntegrationTests/
+├── docker-compose.yml
+└── README.md
+
+```
 
 ### Project Types Reference
 
