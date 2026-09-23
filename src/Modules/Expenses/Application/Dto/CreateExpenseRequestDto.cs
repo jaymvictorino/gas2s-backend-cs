@@ -1,6 +1,6 @@
 namespace Expenses.Application.Dto;
 
-public record CreateExpenseRequest(
+public record CreateExpenseRequestDto(
     decimal Amount,
     string Category,
     string Description,
