@@ -9,5 +9,5 @@ public class GetExpenseHandler
 
     public GetExpenseHandler(IExpenseRepository rep) => _rep = rep;
 
-    public async Task<IReadOnlyList<ExpenseResponse>> GetAllAsync() => await _rep.GetAllAsync();
+    public async Task<IReadOnlyList<ExpenseResponseDto>> GetAllAsync() => await _rep.GetAllAsync();
 }
