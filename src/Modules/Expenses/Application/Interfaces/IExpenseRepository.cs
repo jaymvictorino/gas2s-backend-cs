@@ -5,6 +5,6 @@ namespace Expenses.Application.Interfaces;
 public interface IExpenseRepository
 {
     Task<IReadOnlyList<ExpenseResponse>> GetAllAsync();
-    Task<ExpenseResponse?> GetById(Guid id);
+    Task<ExpenseResponse?> GetByIdAsync(Guid id);
     Task<ExpenseResponse> CreateAsync(CreateExpenseRequest expReq);
 }
