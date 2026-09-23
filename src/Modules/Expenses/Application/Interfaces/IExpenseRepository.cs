@@ -6,5 +6,5 @@ public interface IExpenseRepository
 {
     Task<IReadOnlyList<ExpenseResponse>> GetAllAsync();
     Task<ExpenseResponse?> GetById(Guid id);
-    Task<CreateExpenseRequest> CreateAsync();
+    Task<ExpenseResponse> CreateAsync(CreateExpenseRequest expReq);
 }
