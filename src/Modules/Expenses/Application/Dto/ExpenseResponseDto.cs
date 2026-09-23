@@ -1,6 +1,6 @@
 namespace Expenses.Application.Dto;
 
-public record ExpenseResponse(
+public record ExpenseResponseDto(
     Guid Id,
     decimal Amount,
     string Category,

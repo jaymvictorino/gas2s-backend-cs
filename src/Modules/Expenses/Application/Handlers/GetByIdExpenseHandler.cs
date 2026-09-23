@@ -9,5 +9,5 @@ public class GetByIdExpenseHandler
 
     public GetByIdExpenseHandler(IExpenseRepository rep) => _rep = rep;
 
-    public async Task<ExpenseResponse?> GetByIdAsync(Guid id) => await _rep.GetByIdAsync(id);
+    public async Task<ExpenseResponseDto?> GetByIdAsync(Guid id) => await _rep.GetByIdAsync(id);
 }

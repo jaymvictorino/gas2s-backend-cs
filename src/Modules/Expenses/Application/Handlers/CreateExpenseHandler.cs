@@ -9,6 +9,6 @@ public class CreateExpenseHandler
 
     public CreateExpenseHandler(IExpenseRepository rep) => _rep = rep;
 
-    public async Task<ExpenseResponse> CreateExpenseAsync(CreateExpenseRequestDto expReq) =>
+    public async Task<ExpenseResponseDto> CreateExpenseAsync(CreateExpenseRequestDto expReq) =>
         await _rep.CreateAsync(expReq);
 }
