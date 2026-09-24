@@ -4,7 +4,7 @@ using FluentAssertions;
 
 namespace Gas2s.UnitTests.Expenses;
 
-public class ExpensesDomain
+public class ExpensesDomainTest
 {
     [Fact]
     public void Expense_Should_Store_Assigned_Values()
