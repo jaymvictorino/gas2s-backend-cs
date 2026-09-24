@@ -21,5 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Modules\Expenses\Domain\Expenses.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Expenses\Application\Expenses.Application.csproj" />
   </ItemGroup>
 </Project>
