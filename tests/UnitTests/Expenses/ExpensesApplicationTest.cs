@@ -41,6 +41,28 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
+    public async Task CreateExpenseHandler_Returns_Exactly_What_Repository_Returns()
+    {
+        const decimal amt = 127.00m;
+        const ExpenseCategory cat = ExpenseCategory.Clothing;
+        const string desc = "Gift for Liji";
+        var date = new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc);
+
+        var request = new CreateExpenseRequestDto(amt, cat, desc, date);
+        var response = new ExpenseResponseDto(Guid.NewGuid(), amt, cat, desc, date);
+
+        _repo.CreateAsync(request).Returns(response);
+
+        var result = await _create.CreateExpenseAsync(request);
+
+        result.Id.Should().Be(response.Id);
+        result.Amount.Should().Be(response.Amount);
+        result.Category.Should().Be(response.Category);
+        result.Description.Should().Be(response.Description);
+        result.Date.Should().Be(response.Date);
+    }
+
+    [Fact]
     public async Task GetExpenseHandler_Should_Return_All_Expenses()
     {
         var expenses = new List<ExpenseResponseDto>
