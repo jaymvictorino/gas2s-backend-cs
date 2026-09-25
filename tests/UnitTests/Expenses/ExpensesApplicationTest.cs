@@ -93,4 +93,16 @@ public class ExpensesApplicationTest
         result.Should().Be(expense);
         await _repo.Received(1).GetByIdAsync(guid);
     }
+
+    [Fact]
+    public async Task GetByIdExpenseHandler_MissingGuid_Returns_Null()
+    {
+        var guid = Guid.NewGuid();
+
+        _repo.GetByIdAsync(guid).Returns((ExpenseResponseDto?)null);
+
+        var result = await _getById.GetByIdAsync(guid);
+
+        result.Should().BeNull();
+    }
 }
