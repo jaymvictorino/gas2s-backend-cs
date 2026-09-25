@@ -1,5 +1,8 @@
+using Expenses.Application.Dto;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
+using Expenses.Domain.Enums;
+using FluentAssertions;
 using NSubstitute;
 
 namespace Gas2s.UnitTests.Expenses;
@@ -18,5 +21,22 @@ public class ExpensesApplicationTest
         _getById = new GetByIdExpenseHandler(_repo);
     }
 
-    // TODO: Add unit tests
+    [Fact]
+    public async Task CreateExpenseHandler_Should_Create_New_Expense()
+    {
+        const decimal amt = 127.00m;
+        const ExpenseCategory cat = ExpenseCategory.Clothing;
+        const string desc = "Gift for Liji";
+        var date = new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc);
+
+        var request = new CreateExpenseRequestDto(amt, cat, desc, date);
+        var response = new ExpenseResponseDto(Guid.NewGuid(), amt, cat, desc, date);
+
+        _repo.CreateAsync(request).Returns(response);
+
+        var result = await _create.CreateExpenseAsync(request);
+
+        result.Should().Be(response);
+        await _repo.Received(1).CreateAsync(request);
+    }
 }
