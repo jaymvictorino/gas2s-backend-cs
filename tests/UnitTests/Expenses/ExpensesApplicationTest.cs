@@ -39,4 +39,26 @@ public class ExpensesApplicationTest
         result.Should().Be(response);
         await _repo.Received(1).CreateAsync(request);
     }
+
+    [Fact]
+    public async Task GetExpenseHandler_Should_Return_All_Expenses()
+    {
+        var expenses = new List<ExpenseResponseDto>
+        {
+            new(Guid.NewGuid(), 100, ExpenseCategory.Groceries, "Instant noodles", DateTime.Now),
+            new(
+                Guid.NewGuid(),
+                10000,
+                ExpenseCategory.Electronics,
+                "Smartphone",
+                new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc)
+            ),
+        };
+
+        _repo.GetAllAsync().Returns(expenses);
+
+        var result = await _get.GetAllAsync();
+
+        result.Should().HaveCount(2).And.BeEquivalentTo(expenses);
+    }
 }
