@@ -73,4 +73,24 @@ public class ExpensesApplicationTest
 
         result.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task GetByIdExpenseHandler_ExistingGuid_Returns_Response()
+    {
+        var guid = Guid.NewGuid();
+        var expense = new ExpenseResponseDto(
+            guid,
+            100,
+            ExpenseCategory.Groceries,
+            "Instant noodles",
+            DateTime.Now
+        );
+
+        _repo.GetByIdAsync(guid).Returns(expense);
+
+        var result = await _getById.GetByIdAsync(guid);
+
+        result.Should().Be(expense);
+        await _repo.Received(1).GetByIdAsync(guid);
+    }
 }
