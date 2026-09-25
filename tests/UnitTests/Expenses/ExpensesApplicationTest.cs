@@ -61,4 +61,16 @@ public class ExpensesApplicationTest
 
         result.Should().HaveCount(2).And.BeEquivalentTo(expenses);
     }
+
+    [Fact]
+    public async Task GetExpenseHandler_EmptyRepository_Should_Return_EmptyList()
+    {
+        var expenses = new List<ExpenseResponseDto>();
+
+        _repo.GetAllAsync().Returns(expenses);
+
+        var result = await _get.GetAllAsync();
+
+        result.Should().BeEmpty();
+    }
 }
