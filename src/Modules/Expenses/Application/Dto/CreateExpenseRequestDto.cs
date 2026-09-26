@@ -1,8 +1,10 @@
+using Expenses.Domain.Enums;
+
 namespace Expenses.Application.Dto;
 
 public record CreateExpenseRequestDto(
     decimal Amount,
-    string Category,
+    ExpenseCategory Category,
     string Description,
     DateTime Date
 );
