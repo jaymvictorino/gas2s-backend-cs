@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Expenses.Application.Validators;
 
-public class CreateExpenseRequestValidator : AbstractValidator<CreateExpenseRequestDto>
+public class CreateExpenseRequestDtoValidator : AbstractValidator<CreateExpenseRequestDto>
 {
-    public CreateExpenseRequestValidator()
+    public CreateExpenseRequestDtoValidator()
     {
         RuleFor(x => x.Amount).GreaterThan(0).WithMessage("Amount must be positive.");
 
