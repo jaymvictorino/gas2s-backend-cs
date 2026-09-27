@@ -11,8 +11,8 @@ public class Expense
     public string? Description { get; private set; }
     public DateOnly Date { get; private set; }
     public TimeOnly Time { get; private set; }
-    public DateTime CreatedAtUtc { get; private set; }
-    public DateTime UpdatedAtUtc { get; private set; }
+    public DateTimeOffset CreatedAtUtc { get; private set; }
+    public DateTimeOffset UpdatedAtUtc { get; private set; }
 
     private Expense() { } // Parameter-less constructor
 
