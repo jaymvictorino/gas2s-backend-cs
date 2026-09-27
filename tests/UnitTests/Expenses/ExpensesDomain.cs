@@ -6,6 +6,8 @@ namespace Gas2s.UnitTests.Expenses;
 
 public class ExpensesDomain
 {
+    private readonly FakeTimeProvider _fakeTime = new(new DateTimeOffset(2026, 9, 27, 14, 0 ,0, TimeSpan.Zero));
+    
     [Fact]
     public void Expense_Should_Store_Assigned_Values()
     {
