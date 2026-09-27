@@ -35,4 +35,19 @@ public class Expense
             UpdatedAtUtc = nowUtc,
         };
     }
+
+    public void Update(
+        decimal amount,
+        ExpenseCategory category,
+        string description,
+        DateTime date,
+        DateTime nowUtc
+    )
+    {
+        Amount = amount;
+        Category = category;
+        Description = description;
+        Date = date;
+        UpdatedAtUtc = nowUtc;
+    }
 }
