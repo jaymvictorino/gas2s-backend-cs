@@ -20,7 +20,7 @@ public class ExpensesDomain
         const string desc = "Gift for Liji";
         var date = new DateOnly(2026, 9, 22);
         var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime;
+        var createdAt = _fakeTime.GetUtcNow();
 
         var expense = Expense.Create(userId, amt, cat, desc, date, time, createdAt);
 
