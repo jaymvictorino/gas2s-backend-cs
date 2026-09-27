@@ -4,12 +4,12 @@ namespace Expenses.Domain.Entities;
 
 public class Expense
 {
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
-    public decimal Amount { get; set; }
-    public ExpenseCategory Category { get; set; }
-    public string? Description { get; set; }
-    public DateTime Date { get; set; }
-    public DateTime CreatedAtUtc { get; set; }
-    public DateTime UpdatedAtUtc { get; set; }
+    public Guid Id { get; private set; }
+    public Guid UserId { get; private set; }
+    public decimal Amount { get; private set; }
+    public ExpenseCategory Category { get; private set; }
+    public string? Description { get; private set; }
+    public DateTime Date { get; private set; }
+    public DateTime CreatedAtUtc { get; private set; }
+    public DateTime UpdatedAtUtc { get; private set; }
 }
