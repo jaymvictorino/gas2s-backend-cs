@@ -21,8 +21,9 @@ public class Expense
         decimal amount,
         ExpenseCategory category,
         string description,
-        DateTime date,
-        DateTime nowUtc
+        DateOnly date,
+        TimeOnly time,
+        DateTimeOffset nowUtc
     )
     {
         return new Expense
@@ -31,7 +32,9 @@ public class Expense
             UserId = userId,
             Amount = amount,
             Category = category,
+            Description = description,
             Date = date,
+            Time = time,
             CreatedAtUtc = nowUtc,
             UpdatedAtUtc = nowUtc,
         };
