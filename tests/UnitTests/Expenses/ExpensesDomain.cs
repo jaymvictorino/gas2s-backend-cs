@@ -44,7 +44,7 @@ public class ExpensesDomain
         const string desc = "Gift for Liji";
         var date = new DateOnly(2026, 9, 22);
         var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime;
+        var createdAt = _fakeTime.GetUtcNow();
 
         var expense = Expense.Create(userId, amt, cat, desc, date, time, createdAt);
 
@@ -53,7 +53,18 @@ public class ExpensesDomain
         const string updDesc = "New gift for Liji";
         _fakeTime.Advance(TimeSpan.FromHours(1));
         var updatedAt = _fakeTime.GetUtcNow();
-        expense.Update(updAmt, updCat, updDesc, date, time, _fakeTime));
+
+        expense.Update(updAmt, updCat, updDesc, date, time, updatedAt);
+
+        expense.Id.Should().NotBe(Guid.Empty);
+        expense.UserId.Should().Be(userId);
+        expense.Amount.Should().Be(updAmt);
+        expense.Category.Should().Be(updCat);
+        expense.Description.Should().Be(updDesc);
+        expense.Date.Should().Be(date);
+        expense.Time.Should().Be(time);
+        expense.CreatedAtUtc.Should().Be(createdAt);
+        expense.UpdatedAtUtc.Should().Be(updatedAt);
     }
 
     [Fact]
