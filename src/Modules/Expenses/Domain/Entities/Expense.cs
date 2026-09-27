@@ -44,8 +44,9 @@ public class Expense
         decimal amount,
         ExpenseCategory category,
         string description,
-        DateTime date,
-        DateTime nowUtc
+        DateOnly date,
+        TimeOnly time,
+        DateTimeOffset nowUtc
     )
     {
         Amount = amount;
