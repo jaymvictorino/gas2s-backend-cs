@@ -12,4 +12,27 @@ public class Expense
     public DateTime Date { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime UpdatedAtUtc { get; private set; }
+
+    private Expense() { } // Parameter-less constructor
+
+    public static Expense Create(
+        Guid userId,
+        decimal amount,
+        ExpenseCategory category,
+        string description,
+        DateTime date,
+        DateTime nowUtc
+    )
+    {
+        return new Expense
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Amount = amount,
+            Category = category,
+            Date = date,
+            CreatedAtUtc = nowUtc,
+            UpdatedAtUtc = nowUtc,
+        };
+    }
 }
