@@ -18,10 +18,11 @@ public class ExpensesDomain
         const decimal amt = 127.00m;
         const ExpenseCategory cat = ExpenseCategory.Clothing;
         const string desc = "Gift for Liji";
-        var date = new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc);
-        var createdAt = DateTime.UtcNow;
+        var date = new DateOnly(2026, 9, 22);
+        var time = new TimeOnly(2, 11, 0);
+        var createdAt = _fakeTime;
 
-        var expense = Expense.Create(userId, amt, cat, desc, date, createdAt);
+        var expense = Expense.Create(userId, amt, cat, desc, date, time, createdAt);
 
         expense.Id.Should().NotBe(Guid.Empty);
         expense.UserId.Should().Be(userId);
@@ -29,6 +30,7 @@ public class ExpensesDomain
         expense.Category.Should().Be(cat);
         expense.Description.Should().Be(desc);
         expense.Date.Should().Be(date);
+        expense.Time.Should().Be(time);
         expense.CreatedAtUtc.Should().Be(createdAt);
         expense.UpdatedAtUtc.Should().Be(createdAt);
     }
