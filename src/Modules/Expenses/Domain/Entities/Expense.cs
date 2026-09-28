@@ -26,6 +26,9 @@ public class Expense
         DateTimeOffset nowUtc
     )
     {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("UserId is required.", nameof(userId));
+
         return new Expense
         {
             Id = Guid.NewGuid(),
@@ -49,6 +52,8 @@ public class Expense
         DateTimeOffset nowUtc
     )
     {
+        // TODO: Add validation
+
         Amount = amount;
         Category = category;
         Description = description;
