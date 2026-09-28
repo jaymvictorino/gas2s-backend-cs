@@ -32,6 +32,12 @@ public class Expense
         if (amount <= 0)
             throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be positive");
 
+        if (!Enum.IsDefined(category))
+            throw new ArgumentOutOfRangeException(
+                nameof(category),
+                "Category must be a valid ExpenseCategory"
+            );
+
         return new Expense
         {
             Id = Guid.NewGuid(),
