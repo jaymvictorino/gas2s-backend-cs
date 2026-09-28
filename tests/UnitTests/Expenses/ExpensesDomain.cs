@@ -51,6 +51,24 @@ public class ExpensesDomain
         expense.Should().Throw<ArgumentException>().WithParameterName("userId");
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-0.1)]
+    public void Create_ZeroOrNegativeAmount_ThrowException(decimal amt)
+    {
+        var userId = Guid.NewGuid();
+        const ExpenseCategory cat = ExpenseCategory.Clothing;
+        const string desc = "Gift for Liji";
+        var date = new DateOnly(2026, 9, 22);
+        var time = new TimeOnly(2, 11, 0);
+        var createdAt = _fakeTime.GetUtcNow();
+
+        var expense = () => Expense.Create(userId, amt, cat, desc, date, time, createdAt);
+
+        expense.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("amount");
+    }
+
     [Fact]
     public void Create_TrimDescription_NullDescription()
     {
