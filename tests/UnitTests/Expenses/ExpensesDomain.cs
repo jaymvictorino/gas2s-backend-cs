@@ -12,7 +12,7 @@ public class ExpensesDomain
     );
 
     [Fact]
-    public void Expense_Should_Store_Assigned_Values()
+    public void Create_Should_Store_Assigned_Values()
     {
         var userId = Guid.NewGuid();
         const decimal amt = 127.00m;
@@ -33,6 +33,23 @@ public class ExpensesDomain
         expense.Time.Should().Be(time);
         expense.CreatedAtUtc.Should().Be(createdAt);
         expense.UpdatedAtUtc.Should().Be(createdAt);
+    }
+
+    [Fact]
+    public void Create_TrimDescription_NullDescription()
+    {
+        var userId = Guid.NewGuid();
+        const decimal amt = 127.00m;
+        const ExpenseCategory cat = ExpenseCategory.Clothing;
+        var date = new DateOnly(2026, 9, 22);
+        var time = new TimeOnly(2, 11, 0);
+        var createdAt = _fakeTime.GetUtcNow();
+
+        var blank = Expense.Create(userId, amt, cat, "     ", date, time, createdAt);
+        var withSpaces = Expense.Create(userId, amt, cat, "     ewan    ", date, time, createdAt);
+
+        blank.Description.Should().BeNull();
+        withSpaces.Description.Should().Be("ewan");
     }
 
     [Fact]
