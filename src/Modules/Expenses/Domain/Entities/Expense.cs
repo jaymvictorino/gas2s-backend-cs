@@ -29,6 +29,9 @@ public class Expense
         if (userId == Guid.Empty)
             throw new ArgumentException("UserId is required.", nameof(userId));
 
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be positive");
+
         return new Expense
         {
             Id = Guid.NewGuid(),
