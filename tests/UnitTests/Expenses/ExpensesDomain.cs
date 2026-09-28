@@ -86,6 +86,22 @@ public class ExpensesDomain
     }
 
     [Fact]
+    public void Create_VeryLongDescription_ThrowException()
+    {
+        var userId = Guid.NewGuid();
+        const decimal amt = 127.00m;
+        const ExpenseCategory cat = ExpenseCategory.Clothing;
+        var veryLongDesc = new string('x', 501);
+        var date = new DateOnly(2026, 9, 22);
+        var time = new TimeOnly(2, 11, 0);
+        var createdAt = _fakeTime.GetUtcNow();
+
+        var expense = () => Expense.Create(userId, amt, cat, veryLongDesc, date, time, createdAt);
+
+        expense.Should().Throw<ArgumentException>().WithParameterName("description");
+    }
+
+    [Fact]
     public void Create_TrimDescription_NullDescription()
     {
         var userId = Guid.NewGuid();
