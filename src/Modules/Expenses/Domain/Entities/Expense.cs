@@ -32,7 +32,7 @@ public class Expense
             UserId = userId,
             Amount = amount,
             Category = category,
-            Description = description,
+            Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
             Date = date,
             Time = time,
             CreatedAtUtc = nowUtc,
