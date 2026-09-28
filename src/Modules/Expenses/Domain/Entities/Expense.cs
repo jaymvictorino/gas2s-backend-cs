@@ -30,12 +30,21 @@ public class Expense
             throw new ArgumentException("UserId is required.", nameof(userId));
 
         if (amount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be positive");
+            throw new ArgumentOutOfRangeException(
+                nameof(amount),
+                "Amount must be greater than zero."
+            );
 
         if (!Enum.IsDefined(category))
             throw new ArgumentOutOfRangeException(
                 nameof(category),
-                "Category must be a valid ExpenseCategory"
+                "Category must be a valid ExpenseCategory."
+            );
+
+        if (description is { Length: > 500 })
+            throw new ArgumentException(
+                "Description cannot exceed 500 characters.",
+                nameof(description)
             );
 
         return new Expense
