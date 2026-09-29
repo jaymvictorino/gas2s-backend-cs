@@ -212,6 +212,45 @@ public class ExpensesDomain
     }
 
     [Fact]
+    public void Update_TrimDescription_NullDescription()
+    {
+        var expense = Expense.Create(
+            _userId,
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
+
+        var expCopy = expense;
+
+        _fakeTime.Advance(TimeSpan.FromHours(1));
+
+        expense.Update(
+            127.00m,
+            ExpenseCategory.Clothing,
+            "   Gift    ",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
+
+        expCopy.Update(
+            127.00m,
+            ExpenseCategory.Clothing,
+            "       ",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
+
+        expense.Description.Should().Be("Gift");
+        expCopy.Description.Should().BeNull();
+    }
+
+    [Fact]
     public void ExpenseCategory_Should_Contain_Expected_Enums()
     {
         var categories = Enum.GetValues<ExpenseCategory>();
