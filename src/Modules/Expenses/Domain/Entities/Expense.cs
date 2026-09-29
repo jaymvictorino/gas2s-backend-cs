@@ -92,6 +92,7 @@ public class Expense
         Category = category;
         Description = description;
         Date = date;
+        Time = time;
         UpdatedAtUtc = nowUtc;
     }
 }
