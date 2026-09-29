@@ -70,7 +70,23 @@ public class Expense
         DateTimeOffset nowUtc
     )
     {
-        // TODO: Add validation
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(
+                nameof(amount),
+                "Amount must be greater than zero."
+            );
+
+        if (!Enum.IsDefined(category))
+            throw new ArgumentOutOfRangeException(
+                nameof(category),
+                "Category must be a valid ExpenseCategory."
+            );
+
+        if (description is { Length: > 500 })
+            throw new ArgumentException(
+                "Description cannot exceed 500 characters.",
+                nameof(description)
+            );
 
         Amount = amount;
         Category = category;
