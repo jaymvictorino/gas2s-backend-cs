@@ -224,7 +224,15 @@ public class ExpensesDomain
             _fakeTime.GetUtcNow()
         );
 
-        var expCopy = expense;
+        var exp2 = Expense.Create(
+            _userId,
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
 
         _fakeTime.Advance(TimeSpan.FromHours(1));
 
@@ -237,7 +245,7 @@ public class ExpensesDomain
             _fakeTime.GetUtcNow()
         );
 
-        expCopy.Update(
+        exp2.Update(
             127.00m,
             ExpenseCategory.Clothing,
             "       ",
@@ -247,7 +255,7 @@ public class ExpensesDomain
         );
 
         expense.Description.Should().Be("Gift");
-        expCopy.Description.Should().BeNull();
+        exp2.Description.Should().BeNull();
     }
 
     [Fact]
