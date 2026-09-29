@@ -184,6 +184,34 @@ public class ExpensesDomain
     }
 
     [Fact]
+    public void Update_InvalidCategory_ThrowException()
+    {
+        var expense = Expense.Create(
+            _userId,
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
+
+        _fakeTime.Advance(TimeSpan.FromHours(1));
+
+        var updExp = () =>
+            expense.Update(
+                127.00m,
+                (ExpenseCategory)999,
+                "Gift",
+                new DateOnly(2026, 9, 22),
+                new TimeOnly(14, 2, 0),
+                _fakeTime.GetUtcNow()
+            );
+
+        updExp.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("category");
+    }
+
+    [Fact]
     public void ExpenseCategory_Should_Contain_Expected_Enums()
     {
         var categories = Enum.GetValues<ExpenseCategory>();
