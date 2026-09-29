@@ -212,6 +212,34 @@ public class ExpensesDomain
     }
 
     [Fact]
+    public void Update_VeryLongDescription_ThrowException()
+    {
+        var expense = Expense.Create(
+            _userId,
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
+
+        _fakeTime.Advance(TimeSpan.FromHours(1));
+
+        var updExp = () =>
+            expense.Update(
+                127.00m,
+                ExpenseCategory.Clothing,
+                new string('x', 501),
+                new DateOnly(2026, 9, 22),
+                new TimeOnly(14, 2, 0),
+                _fakeTime.GetUtcNow()
+            );
+
+        updExp.Should().Throw<ArgumentException>().WithParameterName("description");
+    }
+
+    [Fact]
     public void Update_TrimDescription_NullDescription()
     {
         var expense = Expense.Create(
