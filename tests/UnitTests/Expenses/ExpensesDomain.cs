@@ -11,6 +11,8 @@ public class ExpensesDomain
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
     );
 
+    private readonly Guid _userId = Guid.NewGuid();
+
     [Fact]
     public void Create_Should_Store_Assigned_Values()
     {
@@ -148,6 +150,37 @@ public class ExpensesDomain
         expense.Time.Should().Be(time);
         expense.CreatedAtUtc.Should().Be(createdAt);
         expense.UpdatedAtUtc.Should().Be(updatedAt);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-0.1)]
+    public void Update_ZeroOrNegativeAmount_ThrowException(decimal amount)
+    {
+        var expense = Expense.Create(
+            _userId,
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            new DateOnly(2026, 9, 22),
+            new TimeOnly(14, 2, 0),
+            _fakeTime.GetUtcNow()
+        );
+
+        _fakeTime.Advance(TimeSpan.FromHours(1));
+
+        var updExp = () =>
+            expense.Update(
+                amount,
+                ExpenseCategory.Clothing,
+                "Gift",
+                new DateOnly(2026, 9, 22),
+                new TimeOnly(14, 2, 0),
+                _fakeTime.GetUtcNow()
+            );
+
+        updExp.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("amount");
     }
 
     [Fact]
