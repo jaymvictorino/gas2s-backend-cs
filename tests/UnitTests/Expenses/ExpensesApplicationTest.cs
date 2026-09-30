@@ -54,23 +54,26 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task CreateExpenseHandler_Returns_Exactly_What_Repository_Returns()
     {
-        const decimal amt = 127.00m;
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        const string desc = "Gift for Liji";
-        var date = new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc);
+        var request = new CreateExpenseRequestDto(
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+        var expense = ExpenseMapper.ToEntity(request, _userId);
+        var response = ExpenseMapper.ToDto(expense);
 
-        var request = new CreateExpenseRequestDto(amt, cat, desc, date);
-        var response = new ExpenseResponseDto(Guid.NewGuid(), amt, cat, desc, date);
+        _repo.CreateAsync(expense).Returns(expense);
 
-        _repo.CreateAsync(request).Returns(response);
-
-        var result = await _create.CreateExpenseAsync(request);
+        var result = await _create.CreateExpenseAsync(request, _userId);
 
         result.Id.Should().Be(response.Id);
         result.Amount.Should().Be(response.Amount);
         result.Category.Should().Be(response.Category);
         result.Description.Should().Be(response.Description);
         result.Date.Should().Be(response.Date);
+        result.Time.Should().Be(response.Time);
     }
 
     [Fact]
