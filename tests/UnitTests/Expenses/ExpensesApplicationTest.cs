@@ -123,11 +123,9 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task GetExpenseHandler_EmptyRepository_Should_Return_EmptyList()
     {
-        var expenses = new List<ExpenseResponseDto>();
+        _repo.GetAllAsync(_userId).Returns([]);
 
-        _repo.GetAllAsync().Returns(expenses);
-
-        var result = await _get.GetAllAsync();
+        var result = await _get.GetAllAsync(_userId);
 
         result.Should().BeEmpty();
     }
