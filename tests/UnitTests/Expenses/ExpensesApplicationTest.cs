@@ -2,6 +2,7 @@ using Expenses.Application.Dto;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
 using Expenses.Application.Mappings;
+using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
@@ -79,23 +80,44 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task GetExpenseHandler_Should_Return_All_Expenses()
     {
-        var expenses = new List<ExpenseResponseDto>
+        var expenses = new List<Expense>
         {
-            new(Guid.NewGuid(), 100, ExpenseCategory.Groceries, "Instant noodles", DateTime.Now),
-            new(
-                Guid.NewGuid(),
+            Expense.Create(
+                _userId,
+                100,
+                ExpenseCategory.Groceries,
+                "Instant noodles",
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                _fakeTime.GetUtcNow()
+            ),
+            Expense.Create(
+                _userId,
                 10000,
                 ExpenseCategory.Electronics,
                 "Smartphone",
-                new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc)
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                _fakeTime.GetUtcNow()
+            ),
+            Expense.Create(
+                Guid.NewGuid(),
+                2000,
+                ExpenseCategory.Utilities,
+                "Electricity",
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                _fakeTime.GetUtcNow()
             ),
         };
 
-        _repo.GetAllAsync().Returns(expenses);
+        var expected = expenses.FindAll(e => e.UserId == _userId);
 
-        var result = await _get.GetAllAsync();
+        _repo.GetAllAsync(_userId).Returns(expected);
 
-        result.Should().HaveCount(2).And.BeEquivalentTo(expenses);
+        var result = await _get.GetAllAsync(_userId);
+
+        result.Should().HaveCount(2).And.BeEquivalentTo(expected);
     }
 
     [Fact]
