@@ -13,6 +13,9 @@ public class ExpensesApplicationTest
     private readonly FakeTimeProvider _fakeTime = new(
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
     );
+
+    private readonly Guid _Id = Guid.NewGuid();
+
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
     private readonly GetExpenseHandler _get;
@@ -28,12 +31,13 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task CreateExpenseHandler_Should_Create_New_Expense()
     {
-        const decimal amt = 127.00m;
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        const string desc = "Gift for Liji";
-        var date = new DateTime(2026, 9, 22, 2, 11, 0, DateTimeKind.Utc);
-
-        var request = new CreateExpenseRequestDto(amt, cat, desc, date);
+        var request = new CreateExpenseRequestDto(
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
         var response = new ExpenseResponseDto(Guid.NewGuid(), amt, cat, desc, date);
 
         _repo.CreateAsync(request).Returns(response);
