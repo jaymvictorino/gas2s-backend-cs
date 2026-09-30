@@ -7,5 +7,6 @@ public record ExpenseResponseDto(
     decimal Amount,
     ExpenseCategory Category,
     string Description,
-    DateTime Date
+    DateOnly Date,
+    TimeOnly Time
 );

@@ -6,5 +6,6 @@ public record CreateExpenseRequestDto(
     decimal Amount,
     ExpenseCategory Category,
     string Description,
-    DateTime Date
+    DateOnly Date,
+    TimeOnly Time
 );
