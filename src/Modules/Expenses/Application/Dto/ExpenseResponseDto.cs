@@ -6,7 +6,7 @@ public record ExpenseResponseDto(
     Guid Id,
     decimal Amount,
     ExpenseCategory Category,
-    string Description,
+    string? Description,
     DateOnly Date,
     TimeOnly Time
 );
