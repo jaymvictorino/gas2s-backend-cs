@@ -18,10 +18,6 @@ public class CreateExpenseRequestDtoValidator : AbstractValidator<CreateExpenseR
             .WithMessage("Description is required.")
             .MaximumLength(500);
 
-        RuleFor(x => x.Date)
-            .LessThanOrEqualTo(DateTime.UtcNow)
-            .WithMessage("Date cannot be in the future.");
-
         RuleFor(x => x.Category).IsInEnum().WithMessage("Invalid expense category");
     }
 }
