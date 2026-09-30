@@ -1,6 +1,7 @@
 using Expenses.Application.Dto;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
+using Expenses.Application.Mappings;
 using Expenses.Domain.Enums;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
@@ -14,7 +15,8 @@ public class ExpensesApplicationTest
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
     );
 
-    private readonly Guid _Id = Guid.NewGuid();
+    private readonly Guid _id = Guid.NewGuid();
+    private readonly Guid _userId = Guid.NewGuid();
 
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
@@ -31,21 +33,22 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task CreateExpenseHandler_Should_Create_New_Expense()
     {
-        var request = new CreateExpenseRequestDto(
-            127.00m,
-            ExpenseCategory.Clothing,
-            "Gift",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
-        );
-        var response = new ExpenseResponseDto(Guid.NewGuid(), amt, cat, desc, date);
+        const decimal amount = 127.00m;
+        const ExpenseCategory category = ExpenseCategory.Clothing;
+        const string description = "Gift";
+        var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime);
+        var time = TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime);
 
-        _repo.CreateAsync(request).Returns(response);
+        var request = new CreateExpenseRequestDto(amount, category, description, date, time);
+        var expense = ExpenseMapper.ToEntity(request, _userId);
+        var response = ExpenseMapper.ToDto(expense);
+
+        _repo.CreateAsync(expense).Returns(expense);
 
         var result = await _create.CreateExpenseAsync(request);
 
         result.Should().Be(response);
-        await _repo.Received(1).CreateAsync(request);
+        await _repo.Received(1).CreateAsync(expense);
     }
 
     [Fact]
