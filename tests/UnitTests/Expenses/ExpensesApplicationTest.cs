@@ -3,12 +3,16 @@ using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
 using Expenses.Domain.Enums;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 
 namespace Gas2s.UnitTests.Expenses;
 
 public class ExpensesApplicationTest
 {
+    private readonly FakeTimeProvider _fakeTime = new(
+        new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
+    );
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
     private readonly GetExpenseHandler _get;
