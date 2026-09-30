@@ -1,5 +1,6 @@
 using Expenses.Application.Dto;
 using Expenses.Application.Interfaces;
+using Expenses.Application.Mappings;
 
 namespace Expenses.Application.Handlers;
 
@@ -9,6 +10,13 @@ public class CreateExpenseHandler
 
     public CreateExpenseHandler(IExpenseRepository rep) => _rep = rep;
 
-    public async Task<ExpenseResponseDto> CreateExpenseAsync(CreateExpenseRequestDto expReq) =>
-        await _rep.CreateAsync(expReq);
+    public async Task<ExpenseResponseDto> CreateExpenseAsync(
+        CreateExpenseRequestDto expenseRequestDto,
+        Guid userId
+    )
+    {
+        var expense = ExpenseMapper.ToEntity(expenseRequestDto, userId);
+        var persisted = await _rep.CreateAsync(expense);
+        return ExpenseMapper.ToDto(persisted);
+    }
 }
