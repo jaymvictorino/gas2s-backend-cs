@@ -157,11 +157,11 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task GetByIdExpenseHandler_MissingGuid_Returns_Null()
     {
-        var guid = Guid.NewGuid();
+        var id = Guid.NewGuid();
 
-        _repo.GetByIdAsync(guid).Returns((ExpenseResponseDto?)null);
+        _repo.GetByIdAsync(_userId, id).Returns((Expense?)null);
 
-        var result = await _getById.GetByIdAsync(guid);
+        var result = await _getById.GetByIdAsync(_userId, id);
 
         result.Should().BeNull();
     }
