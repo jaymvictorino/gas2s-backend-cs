@@ -11,11 +11,11 @@ public class CreateExpenseHandler
     public CreateExpenseHandler(IExpenseRepository rep) => _rep = rep;
 
     public async Task<ExpenseResponseDto> CreateExpenseAsync(
-        CreateExpenseRequestDto expenseRequestDto,
-        Guid userId
+        Guid userId,
+        CreateExpenseRequestDto expenseRequestDto
     )
     {
-        var expense = ExpenseMapper.ToEntity(expenseRequestDto, userId);
+        var expense = ExpenseMapper.ToEntity(userId, expenseRequestDto);
         var persisted = await _rep.CreateAsync(expense);
         return ExpenseMapper.ToDto(persisted);
     }
