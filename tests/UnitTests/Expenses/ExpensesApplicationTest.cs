@@ -112,7 +112,7 @@ public class ExpensesApplicationTest
 
         var result = await _get.GetAllAsync(_userId);
 
-        result.Should().HaveCount(2).And.BeEquivalentTo(expected);
+        result.Should().HaveCount(2).And.BeEquivalentTo(expected.Select(ExpenseMapper.ToDto));
     }
 
     [Fact]
