@@ -5,7 +5,7 @@ namespace Expenses.Application.Mappings;
 
 public class ExpenseMapper
 {
-    public static Expense ToEntity(CreateExpenseRequestDto createExpenseRequestDto, Guid userId) =>
+    public static Expense ToEntity(Guid userId, CreateExpenseRequestDto createExpenseRequestDto) =>
         Expense.Create(
             userId,
             createExpenseRequestDto.Amount,
