@@ -133,21 +133,25 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task GetByIdExpenseHandler_ExistingGuid_Returns_Response()
     {
-        var guid = Guid.NewGuid();
-        var expense = new ExpenseResponseDto(
-            guid,
+        var expense = Expense.Create(
+            _userId,
             100,
             ExpenseCategory.Groceries,
             "Instant noodles",
-            DateTime.Now
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            _fakeTime.GetUtcNow()
         );
 
-        _repo.GetByIdAsync(guid).Returns(expense);
+        var id = expense.Id;
+        var expected = ExpenseMapper.ToDto(expense);
 
-        var result = await _getById.GetByIdAsync(guid);
+        _repo.GetByIdAsync(_userId, id).Returns(expense);
 
-        result.Should().Be(expense);
-        await _repo.Received(1).GetByIdAsync(guid);
+        var result = await _getById.GetByIdAsync(_userId, id);
+
+        result.Should().Be(expected);
+        await _repo.Received(1).GetByIdAsync(_userId, id);
     }
 
     [Fact]
