@@ -59,19 +59,17 @@ public class ExpensesApplicationTest
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
-        var expense = ExpenseMapper.ToEntity(request, _userId);
-        var response = ExpenseMapper.ToDto(expense);
 
-        _repo.CreateAsync(expense).Returns(expense);
+        _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
-        var result = await _create.CreateExpenseAsync(request, _userId);
+        var result = await _create.CreateExpenseAsync(_userId, request);
 
-        result.Id.Should().Be(response.Id);
-        result.Amount.Should().Be(response.Amount);
-        result.Category.Should().Be(response.Category);
-        result.Description.Should().Be(response.Description);
-        result.Date.Should().Be(response.Date);
-        result.Time.Should().Be(response.Time);
+        result.Id.Should().NotBeEmpty();
+        result.Amount.Should().Be(127.00m);
+        result.Category.Should().Be(ExpenseCategory.Clothing);
+        result.Description.Should().Be("Gift");
+        result.Date.Should().Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime));
+        result.Time.Should().Be(TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime));
     }
 
     [Fact]
