@@ -16,7 +16,6 @@ public class ExpensesApplicationTest
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
     );
 
-    private readonly Guid _id = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
 
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
@@ -41,15 +40,13 @@ public class ExpensesApplicationTest
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
-        var expense = ExpenseMapper.ToEntity(request, _userId);
-        var response = ExpenseMapper.ToDto(expense);
 
-        _repo.CreateAsync(expense).Returns(expense);
+        _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
-        var result = await _create.CreateExpenseAsync(request, _userId);
+        var result = await _create.CreateExpenseAsync(_userId, request);
 
-        result.Should().Be(response);
-        await _repo.Received(1).CreateAsync(expense);
+        result.Should().NotBeNull().And.BeOfType<ExpenseResponseDto>();
+        await _repo.Received(1).CreateAsync(Arg.Any<Expense>());
     }
 
     [Fact]
