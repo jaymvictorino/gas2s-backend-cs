@@ -206,7 +206,9 @@ public class ExpensesApplicationTest
     [InlineData(0)]
     [InlineData(-0.1)]
     [InlineData(-1)]
-    public void CreateExpenseRequestDto_AmountLessThanOrEqualToZero_ValidationError(decimal amount)
+    public void ValidateCreateExpenseRequestDto_AmountLessThanOrEqualToZero_ValidationError(
+        decimal amount
+    )
     {
         var zeroOrNegativeAmount = new CreateExpenseRequestDto(
             amount,
@@ -220,5 +222,30 @@ public class ExpensesApplicationTest
 
         validator.Errors[0].PropertyName.Should().Be("Amount");
         validator.Errors[0].ErrorMessage.Should().Be("Amount must be positive.");
+    }
+
+    [Theory]
+    [InlineData(1.234)]
+    [InlineData(12.3456)]
+    [InlineData(123.4567)]
+    public void ValidateCreateExpenseRequestDto_AmountMoreThanTwoDecimalPlaces_ValidationError(
+        decimal amount
+    )
+    {
+        var expenseRequestDto = new CreateExpenseRequestDto(
+            amount,
+            ExpenseCategory.Clothing,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _dtoValidator.Validate(expenseRequestDto);
+
+        validator.Errors[0].PropertyName.Should().Be("Amount");
+        validator
+            .Errors[0]
+            .ErrorMessage.Should()
+            .Be("Amount cannot have more than 2 decimal places.");
     }
 }
