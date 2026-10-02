@@ -250,6 +250,23 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
+    public void ValidateCreateExpenseRequestDto_CategoryNotInExpenseCategory_ValidationError()
+    {
+        var expenseRequestDto = new CreateExpenseRequestDto(
+            127.00m,
+            (ExpenseCategory)999,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _dtoValidator.Validate(expenseRequestDto);
+
+        validator.Errors[0].PropertyName.Should().Be("Category");
+        validator.Errors[0].ErrorMessage.Should().Be("Invalid expense category.");
+    }
+
+    [Fact]
     public void ValidateCreateExpenseRequestDto_DescriptionLengthAbove500_ValidationError()
     {
         var expenseRequestDto = new CreateExpenseRequestDto(
