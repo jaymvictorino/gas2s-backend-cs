@@ -5,7 +5,7 @@ namespace Expenses.Application.Dto;
 public record CreateExpenseRequestDto(
     decimal Amount,
     ExpenseCategory Category,
-    string Description,
+    string? Description,
     DateOnly Date,
     TimeOnly Time
 );
