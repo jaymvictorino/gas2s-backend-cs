@@ -14,9 +14,8 @@ public class CreateExpenseRequestDtoValidator : AbstractValidator<CreateExpenseR
             .WithMessage("Amount cannot have more than 2 decimal places.");
 
         RuleFor(x => x.Description)
-            .NotEmpty()
-            .WithMessage("Description is required.")
-            .MaximumLength(500);
+            .MaximumLength(500)
+            .WithMessage("Description cannot exceed 500 characters.");
 
         RuleFor(x => x.Category).IsInEnum().WithMessage("Invalid expense category");
     }
