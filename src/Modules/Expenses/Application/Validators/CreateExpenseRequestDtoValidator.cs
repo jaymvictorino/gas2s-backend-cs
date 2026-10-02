@@ -17,6 +17,6 @@ public class CreateExpenseRequestDtoValidator : AbstractValidator<CreateExpenseR
             .MaximumLength(500)
             .WithMessage("Description cannot exceed 500 characters.");
 
-        RuleFor(x => x.Category).IsInEnum().WithMessage("Invalid expense category");
+        RuleFor(x => x.Category).IsInEnum().WithMessage("Invalid expense category.");
     }
 }
