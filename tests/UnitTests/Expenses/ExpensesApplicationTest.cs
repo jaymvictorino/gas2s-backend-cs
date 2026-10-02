@@ -178,4 +178,23 @@ public class ExpensesApplicationTest
         expense.Should().BeOfType<Expense>();
         expense.UserId.Should().Be(_userId);
     }
+
+    [Fact]
+    public void ToDto_ConvertExpense_ReturnsExpenseResponseDto()
+    {
+        var expResDto = ExpenseMapper.ToDto(
+            Expense.Create(
+                _userId,
+                127.00m,
+                ExpenseCategory.Clothing,
+                "Gift",
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                _fakeTime.GetUtcNow()
+            )
+        );
+
+        expResDto.Should().BeOfType<ExpenseResponseDto>();
+        expResDto.Id.Should().NotBeEmpty();
+    }
 }
