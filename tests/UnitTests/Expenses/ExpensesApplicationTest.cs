@@ -2,6 +2,7 @@ using Expenses.Application.Dto;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
 using Expenses.Application.Mappings;
+using Expenses.Application.Validators;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using FluentAssertions;
@@ -23,11 +24,14 @@ public class ExpensesApplicationTest
     private readonly GetExpenseHandler _get;
     private readonly GetByIdExpenseHandler _getById;
 
+    private readonly CreateExpenseRequestDtoValidator _dtoValidator;
+
     public ExpensesApplicationTest()
     {
         _create = new CreateExpenseHandler(_repo);
         _get = new GetExpenseHandler(_repo);
         _getById = new GetByIdExpenseHandler(_repo);
+        _dtoValidator = new CreateExpenseRequestDtoValidator();
     }
 
     [Fact]
@@ -196,5 +200,25 @@ public class ExpensesApplicationTest
 
         expResDto.Should().BeOfType<ExpenseResponseDto>();
         expResDto.Id.Should().NotBeEmpty();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-0.1)]
+    [InlineData(-1)]
+    public void CreateExpenseRequestDto_AmountLessThanOrEqualToZero_ValidationError(decimal amount)
+    {
+        var zeroOrNegativeAmount = new CreateExpenseRequestDto(
+            amount,
+            ExpenseCategory.Clothing,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _dtoValidator.Validate(zeroOrNegativeAmount);
+
+        validator.Errors[0].PropertyName.Should().Be("Amount");
+        validator.Errors[0].ErrorMessage.Should().Be("Amount must be positive.");
     }
 }
