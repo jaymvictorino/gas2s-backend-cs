@@ -160,4 +160,22 @@ public class ExpensesApplicationTest
 
         result.Should().BeNull();
     }
+
+    [Fact]
+    public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
+    {
+        var expense = ExpenseMapper.ToEntity(
+            _userId,
+            new CreateExpenseRequestDto(
+                127.00m,
+                ExpenseCategory.Clothing,
+                "Gift",
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            )
+        );
+
+        expense.Should().BeOfType<Expense>();
+        expense.UserId.Should().Be(_userId);
+    }
 }
