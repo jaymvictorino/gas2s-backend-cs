@@ -248,4 +248,21 @@ public class ExpensesApplicationTest
             .ErrorMessage.Should()
             .Be("Amount cannot have more than 2 decimal places.");
     }
+
+    [Fact]
+    public void ValidateCreateExpenseRequestDto_DescriptionLengthAbove500_ValidationError()
+    {
+        var expenseRequestDto = new CreateExpenseRequestDto(
+            127.00m,
+            ExpenseCategory.Clothing,
+            new string('x', 501),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _dtoValidator.Validate(expenseRequestDto);
+
+        validator.Errors[0].PropertyName.Should().Be("Description");
+        validator.Errors[0].ErrorMessage.Should().Be("Description cannot exceed 500 characters.");
+    }
 }
