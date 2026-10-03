@@ -20,7 +20,7 @@ public class Expense
         Guid userId,
         decimal amount,
         ExpenseCategory category,
-        string description,
+        string? description,
         DateOnly date,
         TimeOnly time,
         DateTimeOffset nowUtc
@@ -64,7 +64,7 @@ public class Expense
     public void Update(
         decimal amount,
         ExpenseCategory category,
-        string description,
+        string? description,
         DateOnly date,
         TimeOnly time,
         DateTimeOffset nowUtc
