@@ -21,16 +21,16 @@ public class ExpensesApplicationTest
 
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
-    private readonly GetExpenseHandler _get;
-    private readonly GetByIdExpenseHandler _getById;
+    private readonly GetExpensesHandler _get;
+    private readonly GetExpenseByIdHandler _getById;
 
     private readonly CreateExpenseRequestDtoValidator _dtoValidator;
 
     public ExpensesApplicationTest()
     {
         _create = new CreateExpenseHandler(_repo);
-        _get = new GetExpenseHandler(_repo);
-        _getById = new GetByIdExpenseHandler(_repo);
+        _get = new GetExpensesHandler(_repo);
+        _getById = new GetExpenseByIdHandler(_repo);
         _dtoValidator = new CreateExpenseRequestDtoValidator();
     }
 
@@ -114,7 +114,7 @@ public class ExpensesApplicationTest
 
         _repo.GetAllAsync(_userId).Returns(expected);
 
-        var result = await _get.GetAllAsync(_userId);
+        var result = await _get.GetExpensesAsync(_userId);
 
         result.Should().HaveCount(2).And.BeEquivalentTo(expected.Select(ExpenseMapper.ToDto));
     }
@@ -124,7 +124,7 @@ public class ExpensesApplicationTest
     {
         _repo.GetAllAsync(_userId).Returns([]);
 
-        var result = await _get.GetAllAsync(_userId);
+        var result = await _get.GetExpensesAsync(_userId);
 
         result.Should().BeEmpty();
     }
@@ -147,7 +147,7 @@ public class ExpensesApplicationTest
 
         _repo.GetByIdAsync(_userId, id).Returns(expense);
 
-        var result = await _getById.GetByIdAsync(_userId, id);
+        var result = await _getById.GetExpenseByIdAsync(_userId, id);
 
         result.Should().Be(expected);
         await _repo.Received(1).GetByIdAsync(_userId, id);
@@ -160,7 +160,7 @@ public class ExpensesApplicationTest
 
         _repo.GetByIdAsync(_userId, id).Returns((Expense?)null);
 
-        var result = await _getById.GetByIdAsync(_userId, id);
+        var result = await _getById.GetExpenseByIdAsync(_userId, id);
 
         result.Should().BeNull();
     }
