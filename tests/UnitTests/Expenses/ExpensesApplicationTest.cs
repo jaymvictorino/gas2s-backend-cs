@@ -23,6 +23,7 @@ public class ExpensesApplicationTest
     private readonly CreateExpenseHandler _create;
     private readonly GetExpensesHandler _get;
     private readonly GetExpenseByIdHandler _getById;
+    private readonly UpdateExpenseHandler _update;
 
     private readonly CreateExpenseRequestDtoValidator _dtoValidator;
 
@@ -31,6 +32,7 @@ public class ExpensesApplicationTest
         _create = new CreateExpenseHandler(_repo);
         _get = new GetExpensesHandler(_repo);
         _getById = new GetExpenseByIdHandler(_repo);
+        _update = new UpdateExpenseHandler(_repo);
         _dtoValidator = new CreateExpenseRequestDtoValidator();
     }
 
@@ -163,6 +165,43 @@ public class ExpensesApplicationTest
         var result = await _getById.GetExpenseByIdAsync(_userId, id);
 
         result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UpdateExpenseAsync_NewInformation_ReturnsUpdatedExpense()
+    {
+        var expense = Expense.Create(
+            _userId,
+            100m,
+            ExpenseCategory.Groceries,
+            "Instant noodles",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            _fakeTime.GetUtcNow()
+        );
+
+        _fakeTime.Advance(TimeSpan.FromHours(1));
+
+        var dto = new CreateExpenseRequestDto(
+            10000m,
+            ExpenseCategory.Electronics,
+            "Smartphone",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        _repo.GetByIdAsync(_userId, expense.Id).Returns(expense);
+        _repo.UpdateAsync(_userId, Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
+
+        var result = await _update.UpdateExpenseAsync(_userId, expense.Id, dto);
+
+        result.Should().BeOfType<ExpenseResponseDto>();
+        result.Id.Should().Be(expense.Id);
+        result.Amount.Should().Be(dto.Amount);
+        result.Category.Should().Be(dto.Category);
+        result.Description.Should().Be(dto.Description);
+        result.Date.Should().Be(dto.Date);
+        result.Time.Should().Be(dto.Time);
     }
 
     [Fact]
