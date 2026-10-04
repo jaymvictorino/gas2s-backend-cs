@@ -240,6 +240,30 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
+    public async Task UpdateExpenseAsync_DifferentExpenseId_ReturnsNull()
+    {
+        var dummy = Guid.NewGuid();
+
+        var result = await _update.UpdateExpenseAsync(
+            _userId,
+            dummy,
+            new CreateExpenseRequestDto(
+                10000m,
+                ExpenseCategory.Electronics,
+                "Smartphone",
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            )
+        );
+
+        _repo.GetByIdAsync(_userId, dummy).Returns((Expense?)null);
+
+        result.Should().BeNull();
+        await _repo.Received(1).GetByIdAsync(_userId, dummy);
+        await _repo.Received(0).UpdateAsync(_userId, Arg.Any<Expense>());
+    }
+
+    [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
         var expense = ExpenseMapper.ToEntity(
