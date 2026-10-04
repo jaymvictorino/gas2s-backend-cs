@@ -245,7 +245,7 @@ public class ExpensesApplicationTest
     [InlineData(0)]
     [InlineData(-0.1)]
     [InlineData(-1)]
-    public void ValidateCreateExpenseRequestDto_AmountLessThanOrEqualToZero_ValidationError(
+    public void CreateExpenseRequestDtoValidator_AmountLessThanOrEqualToZero_ValidationError(
         decimal amount
     )
     {
@@ -267,7 +267,7 @@ public class ExpensesApplicationTest
     [InlineData(1.234)]
     [InlineData(12.3456)]
     [InlineData(123.4567)]
-    public void ValidateCreateExpenseRequestDto_AmountMoreThanTwoDecimalPlaces_ValidationError(
+    public void CreateExpenseRequestDtoValidator_AmountMoreThanTwoDecimalPlaces_ValidationError(
         decimal amount
     )
     {
@@ -289,7 +289,7 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
-    public void ValidateCreateExpenseRequestDto_CategoryNotInExpenseCategory_ValidationError()
+    public void CreateExpenseRequestDtoValidator_CategoryNotInExpenseCategory_ValidationError()
     {
         var expenseRequestDto = new CreateExpenseRequestDto(
             127.00m,
@@ -306,7 +306,7 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
-    public void ValidateCreateExpenseRequestDto_DescriptionLengthAbove500_ValidationError()
+    public void CreateExpenseRequestDtoValidator_DescriptionLengthAbove500_ValidationError()
     {
         var expenseRequestDto = new CreateExpenseRequestDto(
             127.00m,
