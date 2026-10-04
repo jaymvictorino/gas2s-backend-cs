@@ -205,6 +205,41 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
+    public async Task UpdateExpenseAsync_DifferentUserId_ReturnsNull()
+    {
+        var expense = Expense.Create(
+            _userId,
+            100m,
+            ExpenseCategory.Groceries,
+            "Instant noodles",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            _fakeTime.GetUtcNow()
+        );
+
+        _fakeTime.Advance(TimeSpan.FromHours(1));
+
+        var dto = new CreateExpenseRequestDto(
+            10000m,
+            ExpenseCategory.Electronics,
+            "Smartphone",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var dummy = Guid.NewGuid();
+
+        _repo.GetByIdAsync(dummy, expense.Id).Returns((Expense?)null);
+        _repo.UpdateAsync(dummy, Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
+
+        var result = await _update.UpdateExpenseAsync(dummy, expense.Id, dto);
+
+        result.Should().BeNull();
+        await _repo.Received(1).GetByIdAsync(dummy, expense.Id);
+        await _repo.Received(0).UpdateAsync(dummy, Arg.Any<Expense>());
+    }
+
+    [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
         var expense = ExpenseMapper.ToEntity(
