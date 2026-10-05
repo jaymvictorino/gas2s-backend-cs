@@ -250,7 +250,7 @@ public class ExpensesApplicationTest
         var result = await _update.UpdateExpenseAsync(
             _userId,
             dummy,
-            new CreateExpenseRequestDto(
+            new UpdateExpenseRequestDto(
                 10000m,
                 ExpenseCategory.Electronics,
                 "Smartphone",
@@ -263,7 +263,7 @@ public class ExpensesApplicationTest
 
         result.Should().BeNull();
         await _repo.Received(1).GetByIdAsync(_userId, dummy);
-        await _repo.Received(0).UpdateAsync(_userId, Arg.Any<Expense>());
+        await _repo.DidNotReceive().UpdateAsync(Arg.Any<Expense>());
     }
 
     [Fact]
