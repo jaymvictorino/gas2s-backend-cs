@@ -185,7 +185,7 @@ public class ExpensesApplicationTest
 
         _fakeTime.Advance(TimeSpan.FromHours(1));
 
-        var dto = new CreateExpenseRequestDto(
+        var dto = new UpdateExpenseRequestDto(
             10000m,
             ExpenseCategory.Electronics,
             "Smartphone",
@@ -194,7 +194,7 @@ public class ExpensesApplicationTest
         );
 
         _repo.GetByIdAsync(_userId, expense.Id).Returns(expense);
-        _repo.UpdateAsync(_userId, Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
+        _repo.UpdateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
         var result = await _update.UpdateExpenseAsync(_userId, expense.Id, dto);
 
