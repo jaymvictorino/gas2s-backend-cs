@@ -8,12 +8,12 @@ public class DeleteExpenseHandler
 
     public DeleteExpenseHandler(IExpenseRepository repo) => _repo = repo;
 
-    public async Task<bool?> DeleteExpenseAsync(Guid userId, Guid id)
+    public async Task<bool> DeleteExpenseAsync(Guid userId, Guid id)
     {
         var retrieved = await _repo.GetByIdAsync(userId, id);
 
         if (retrieved is null)
-            return null;
+            return false;
 
         return await _repo.DeleteAsync(retrieved);
     }
