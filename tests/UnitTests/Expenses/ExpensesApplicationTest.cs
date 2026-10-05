@@ -6,6 +6,7 @@ using Expenses.Application.Validators;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using FluentAssertions;
+using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 
@@ -375,9 +376,10 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.Validate(expenseRequestDto);
+        var validator = _dtoValidator.TestValidate(expenseRequestDto);
 
-        validator.Errors[0].PropertyName.Should().Be("Description");
-        validator.Errors[0].ErrorMessage.Should().Be("Description cannot exceed 500 characters.");
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Description)
+            .WithErrorMessage("Description cannot exceed 500 characters.");
     }
 }
