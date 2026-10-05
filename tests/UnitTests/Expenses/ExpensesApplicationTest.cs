@@ -317,10 +317,11 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.Validate(zeroOrNegativeAmount);
+        var validator = _dtoValidator.TestValidate(zeroOrNegativeAmount);
 
-        validator.Errors[0].PropertyName.Should().Be("Amount");
-        validator.Errors[0].ErrorMessage.Should().Be("Amount must be positive.");
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Amount)
+            .WithErrorMessage("Amount must be positive.");
     }
 
     [Theory]
