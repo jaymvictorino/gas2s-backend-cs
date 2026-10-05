@@ -25,6 +25,7 @@ public class ExpensesApplicationTest
     private readonly GetExpensesHandler _get;
     private readonly GetExpenseByIdHandler _getById;
     private readonly UpdateExpenseHandler _update;
+    private readonly DeleteExpenseHandler _delete;
 
     private readonly CreateExpenseRequestDtoValidator _dtoValidator;
 
@@ -34,6 +35,7 @@ public class ExpensesApplicationTest
         _get = new GetExpensesHandler(_repo);
         _getById = new GetExpenseByIdHandler(_repo);
         _update = new UpdateExpenseHandler(_repo);
+        _delete = new DeleteExpenseHandler(_repo);
         _dtoValidator = new CreateExpenseRequestDtoValidator();
     }
 
@@ -262,6 +264,45 @@ public class ExpensesApplicationTest
         result.Should().BeNull();
         await _repo.Received(1).GetByIdAsync(_userId, dummy);
         await _repo.Received(0).UpdateAsync(_userId, Arg.Any<Expense>());
+    }
+
+    [Fact]
+    public async Task DeleteExpenseAsync_ExpenseExists_DeletesExpenseReturnsTrue()
+    {
+        var expense = Expense.Create(
+            _userId,
+            100,
+            ExpenseCategory.Groceries,
+            "Instant noodles",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            _fakeTime.GetUtcNow()
+        );
+
+        var otherExpense = Expense.Create(
+            Guid.NewGuid(),
+            2000,
+            ExpenseCategory.Utilities,
+            "Electricity",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            _fakeTime.GetUtcNow()
+        );
+
+        var expenses = new List<Expense> { expense, otherExpense };
+
+        _repo.GetByIdAsync(_userId, expense.Id).Returns(expense);
+        _repo
+            .DeleteAsync(expense)
+            .Returns(true)
+            .AndDoes(info => expenses.Remove(info.Arg<Expense>()));
+
+        var result = await _delete.DeleteExpenseAsync(_userId, expense.Id);
+
+        result.Should().BeTrue();
+        expenses.Should().ContainSingle().Which.Amount.Should().Be(2000);
+        await _repo.Received(1).GetByIdAsync(_userId, expense.Id);
+        await _repo.Received(1).DeleteAsync(expense);
     }
 
     [Fact]
