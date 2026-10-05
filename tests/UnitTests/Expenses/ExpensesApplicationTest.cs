@@ -359,10 +359,11 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.Validate(expenseRequestDto);
+        var validator = _dtoValidator.TestValidate(expenseRequestDto);
 
-        validator.Errors[0].PropertyName.Should().Be("Category");
-        validator.Errors[0].ErrorMessage.Should().Be("Invalid expense category.");
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Category)
+            .WithErrorMessage("Invalid expense category.");
     }
 
     [Fact]
