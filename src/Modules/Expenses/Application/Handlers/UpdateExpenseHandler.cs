@@ -13,7 +13,7 @@ public class UpdateExpenseHandler
     public async Task<ExpenseResponseDto?> UpdateExpenseAsync(
         Guid userId,
         Guid id,
-        CreateExpenseRequestDto expenseRequestDto
+        UpdateExpenseRequestDto expenseRequestDto
     )
     {
         var expense = await _repo.GetByIdAsync(userId, id);
@@ -29,7 +29,7 @@ public class UpdateExpenseHandler
             expenseRequestDto.Time,
             DateTimeOffset.UtcNow
         );
-        var updatedExpense = await _repo.UpdateAsync(userId, expense);
+        var updatedExpense = await _repo.UpdateAsync(expense);
 
         return ExpenseMapper.ToDto(updatedExpense);
     }
