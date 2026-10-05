@@ -222,7 +222,7 @@ public class ExpensesApplicationTest
 
         _fakeTime.Advance(TimeSpan.FromHours(1));
 
-        var dto = new CreateExpenseRequestDto(
+        var dto = new UpdateExpenseRequestDto(
             10000m,
             ExpenseCategory.Electronics,
             "Smartphone",
@@ -233,13 +233,13 @@ public class ExpensesApplicationTest
         var dummy = Guid.NewGuid();
 
         _repo.GetByIdAsync(dummy, expense.Id).Returns((Expense?)null);
-        _repo.UpdateAsync(dummy, Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
+        _repo.UpdateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
         var result = await _update.UpdateExpenseAsync(dummy, expense.Id, dto);
 
         result.Should().BeNull();
         await _repo.Received(1).GetByIdAsync(dummy, expense.Id);
-        await _repo.Received(0).UpdateAsync(dummy, Arg.Any<Expense>());
+        await _repo.DidNotReceive().UpdateAsync(Arg.Any<Expense>());
     }
 
     [Fact]
