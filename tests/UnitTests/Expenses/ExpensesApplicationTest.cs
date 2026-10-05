@@ -306,6 +306,18 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
+    public async Task DeleteExpenseAsync_ExpenseNotFound_ReturnsFalse()
+    {
+        _repo.GetByIdAsync(_userId, Arg.Any<Guid>()).Returns((Expense?)null);
+
+        var result = await _delete.DeleteExpenseAsync(_userId, Guid.NewGuid());
+
+        result.Should().BeFalse();
+        await _repo.Received(1).GetByIdAsync(_userId, Arg.Any<Guid>());
+        await _repo.DidNotReceive().DeleteAsync(Arg.Any<Expense>());
+    }
+
+    [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
         var expense = ExpenseMapper.ToEntity(
