@@ -501,4 +501,22 @@ public class ExpensesApplicationTest
             .ShouldHaveValidationErrorFor(dto => dto.Category)
             .WithErrorMessage("Invalid expense category.");
     }
+
+    [Fact]
+    public void UpdateExpenseRequestDtoValidator_DescriptionLengthAbove500_ValidationError()
+    {
+        var expenseRequestDto = new UpdateExpenseRequestDto(
+            127.00m,
+            ExpenseCategory.Clothing,
+            new string('x', 501),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _updateExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
+
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Description)
+            .WithErrorMessage("Description cannot exceed 500 characters.");
+    }
 }
