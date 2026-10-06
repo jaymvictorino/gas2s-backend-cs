@@ -27,7 +27,8 @@ public class ExpensesApplicationTest
     private readonly UpdateExpenseHandler _update;
     private readonly DeleteExpenseHandler _delete;
 
-    private readonly CreateExpenseRequestDtoValidator _dtoValidator;
+    private readonly CreateExpenseRequestDtoValidator _createExpenseRequestDtoValidator;
+    private readonly UpdateExpenseRequestDtoValidator _updateExpenseRequestDtoValidator;
 
     public ExpensesApplicationTest()
     {
@@ -36,7 +37,8 @@ public class ExpensesApplicationTest
         _getById = new GetExpenseByIdHandler(_repo);
         _update = new UpdateExpenseHandler(_repo);
         _delete = new DeleteExpenseHandler(_repo);
-        _dtoValidator = new CreateExpenseRequestDtoValidator();
+        _createExpenseRequestDtoValidator = new CreateExpenseRequestDtoValidator();
+        _updateExpenseRequestDtoValidator = new UpdateExpenseRequestDtoValidator();
     }
 
     [Fact]
@@ -370,7 +372,7 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.TestValidate(zeroOrNegativeAmount);
+        var validator = _createExpenseRequestDtoValidator.TestValidate(zeroOrNegativeAmount);
 
         validator
             .ShouldHaveValidationErrorFor(dto => dto.Amount)
@@ -393,7 +395,7 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.TestValidate(expenseRequestDto);
+        var validator = _createExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
 
         validator
             .ShouldHaveValidationErrorFor(dto => dto.Amount)
@@ -411,7 +413,7 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.TestValidate(expenseRequestDto);
+        var validator = _createExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
 
         validator
             .ShouldHaveValidationErrorFor(dto => dto.Category)
@@ -429,10 +431,33 @@ public class ExpensesApplicationTest
             TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
         );
 
-        var validator = _dtoValidator.TestValidate(expenseRequestDto);
+        var validator = _createExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
 
         validator
             .ShouldHaveValidationErrorFor(dto => dto.Description)
             .WithErrorMessage("Description cannot exceed 500 characters.");
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-0.1)]
+    [InlineData(-1)]
+    public void UpdateExpenseRequestDtoValidator_AmountLessThanOrEqualToZero_ValidationError(
+        decimal amount
+    )
+    {
+        var zeroOrNegativeAmount = new UpdateExpenseRequestDto(
+            amount,
+            ExpenseCategory.Clothing,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _updateExpenseRequestDtoValidator.TestValidate(zeroOrNegativeAmount);
+
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Amount)
+            .WithErrorMessage("Amount must be positive.");
     }
 }
