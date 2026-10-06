@@ -12,5 +12,7 @@ public class UpdateExpenseRequestDtoValidator : AbstractValidator<UpdateExpenseR
             .WithMessage("Amount must be positive.")
             .Must(a => decimal.Round(a, 2) == a)
             .WithMessage("Amount cannot have more than 2 decimal places.");
+
+        RuleFor(x => x.Category).IsInEnum().WithMessage("Invalid expense category.");
     }
 }
