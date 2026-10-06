@@ -483,4 +483,22 @@ public class ExpensesApplicationTest
             .ShouldHaveValidationErrorFor(dto => dto.Amount)
             .WithErrorMessage("Amount cannot have more than 2 decimal places.");
     }
+
+    [Fact]
+    public void UpdateExpenseRequestDtoValidator_CategoryNotInExpenseCategory_ValidationError()
+    {
+        var expenseRequestDto = new UpdateExpenseRequestDto(
+            127.00m,
+            (ExpenseCategory)999,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _updateExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
+
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Category)
+            .WithErrorMessage("Invalid expense category.");
+    }
 }
