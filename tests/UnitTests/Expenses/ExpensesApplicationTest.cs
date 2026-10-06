@@ -460,4 +460,27 @@ public class ExpensesApplicationTest
             .ShouldHaveValidationErrorFor(dto => dto.Amount)
             .WithErrorMessage("Amount must be positive.");
     }
+
+    [Theory]
+    [InlineData(1.234)]
+    [InlineData(12.3456)]
+    [InlineData(123.4567)]
+    public void UpdateExpenseRequestDtoValidator_AmountMoreThanTwoDecimalPlaces_ValidationError(
+        decimal amount
+    )
+    {
+        var expenseRequestDto = new UpdateExpenseRequestDto(
+            amount,
+            ExpenseCategory.Clothing,
+            "Gift",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+
+        var validator = _updateExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
+
+        validator
+            .ShouldHaveValidationErrorFor(dto => dto.Amount)
+            .WithErrorMessage("Amount cannot have more than 2 decimal places.");
+    }
 }
