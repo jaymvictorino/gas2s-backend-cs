@@ -5,7 +5,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace Gas2s.UnitTests.Expenses;
 
-public class ExpensesDomain
+public class ExpensesDomainTest
 {
     private readonly FakeTimeProvider _fakeTime = new(
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
