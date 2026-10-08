@@ -49,5 +49,9 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .IsRequired();
 
         builder.HasIndex(expense => expense.UserId).HasDatabaseName("ix_expenses_user_id");
+
+        builder
+            .HasIndex(expense => new { expense.UserId, expense.Date })
+            .HasDatabaseName("ix_expenses_user_id_date");
     }
 }
