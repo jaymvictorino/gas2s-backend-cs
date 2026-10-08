@@ -47,5 +47,7 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .Property(expense => expense.UpdatedAtUtc)
             .HasColumnName("updated_at_utc")
             .IsRequired();
+
+        builder.HasIndex(expense => expense.UserId).HasDatabaseName("ix_expenses_user_id");
     }
 }
