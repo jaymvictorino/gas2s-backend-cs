@@ -9,4 +9,10 @@ public class ExpenseDbContext : DbContext
         : base(options) { }
 
     public DbSet<Expense> Expenses => Set<Expense>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ExpenseDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
 }
