@@ -31,8 +31,7 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
         builder
             .Property(expense => expense.Description)
             .HasColumnName("description")
-            .HasMaxLength(500)
-            .IsRequired();
+            .HasMaxLength(500);
 
         builder.Property(expense => expense.Date).HasColumnName("date").IsRequired();
 
