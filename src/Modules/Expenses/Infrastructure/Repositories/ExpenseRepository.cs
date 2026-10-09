@@ -29,9 +29,11 @@ public class ExpenseRepository : IExpenseRepository
         );
     }
 
-    public Task<Expense> CreateAsync(Expense expense)
+    public async Task<Expense> CreateAsync(Expense expense)
     {
-        throw new NotImplementedException();
+        _expenseDbContext.Expenses.Add(expense);
+        await _expenseDbContext.SaveChangesAsync();
+        return expense;
     }
 
     public Task<Expense> UpdateAsync(Expense expense)
