@@ -22,9 +22,11 @@ public class ExpenseRepository : IExpenseRepository
             .ToListAsync();
     }
 
-    public Task<Expense?> GetByIdAsync(Guid userId, Guid id)
+    public async Task<Expense?> GetByIdAsync(Guid userId, Guid id)
     {
-        throw new NotImplementedException();
+        return await _expenseDbContext.Expenses.SingleOrDefaultAsync(expense =>
+            expense.UserId == userId && expense.Id == id
+        );
     }
 
     public Task<Expense> CreateAsync(Expense expense)
