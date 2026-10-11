@@ -1,5 +1,6 @@
 namespace Gas2s.IntegrationTests.Expenses;
 
+[Collection(ExpenseDatabaseCollection.Name)]
 public class ExpensesInfrastructureTest : IAsyncLifetime
 {
     public Task InitializeAsync()
