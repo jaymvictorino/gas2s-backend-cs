@@ -37,3 +37,9 @@ public sealed class ExpensesDatabaseFixture : IAsyncLifetime
         return new ExpenseDbContext(options);
     }
 }
+
+[CollectionDefinition(Name)]
+public sealed class ExpenseDatabaseCollection : ICollectionFixture<ExpensesDatabaseFixture>
+{
+    public const string Name = "ExpenseDatabase";
+}
