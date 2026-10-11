@@ -15,9 +15,12 @@ public sealed class ExpensesDatabaseFixture : IAsyncLifetime
 
     public string ConnectionString => _postgreSql.GetConnectionString();
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        throw new NotImplementedException();
+        await _postgreSql.StartAsync();
+
+        await using var context = CreateContext();
+        await context.Database.EnsureCreatedAsync();
     }
 
     public Task DisposeAsync()
