@@ -1,11 +1,24 @@
+using Expenses.Infrastructure.Data;
+using Expenses.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace Gas2s.IntegrationTests.Expenses;
 
 [Collection(ExpenseDatabaseCollection.Name)]
 public class ExpensesInfrastructureTest : IAsyncLifetime
 {
-    public Task InitializeAsync()
+    private readonly ExpensesDatabaseFixture _fixture;
+    private ExpenseDbContext _context = null!;
+    private IDbContextTransaction _transaction = null!;
+    private ExpenseRepository _repo = null!;
+
+    public ExpensesInfrastructureTest(ExpensesDatabaseFixture fixture) => _fixture = fixture;
+
+    public async Task InitializeAsync()
     {
-        throw new NotImplementedException();
+        _context = _fixture.CreateContext();
+        _transaction = await _context.Database.BeginTransactionAsync();
+        _repo = new ExpenseRepository(_context);
     }
 
     public Task DisposeAsync()
