@@ -23,9 +23,9 @@ public sealed class ExpensesDatabaseFixture : IAsyncLifetime
         await context.Database.EnsureCreatedAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        throw new NotImplementedException();
+        await _postgreSql.DisposeAsync();
     }
 
     public ExpenseDbContext CreateContext()
