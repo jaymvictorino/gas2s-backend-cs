@@ -21,8 +21,10 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         _repo = new ExpenseRepository(_context);
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        throw new NotImplementedException();
+        await _transaction.RollbackAsync();
+        await _transaction.DisposeAsync();
+        await _context.DisposeAsync();
     }
 }
