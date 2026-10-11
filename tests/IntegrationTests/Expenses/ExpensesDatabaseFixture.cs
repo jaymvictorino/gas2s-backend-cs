@@ -1,3 +1,5 @@
+using Expenses.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 
 namespace Gas2s.IntegrationTests.Expenses;
@@ -21,5 +23,14 @@ public sealed class ExpensesDatabaseFixture : IAsyncLifetime
     public Task DisposeAsync()
     {
         throw new NotImplementedException();
+    }
+
+    public ExpenseDbContext CreateContext()
+    {
+        var options = new DbContextOptionsBuilder<ExpenseDbContext>()
+            .UseNpgsql(ConnectionString)
+            .Options;
+
+        return new ExpenseDbContext(options);
     }
 }
