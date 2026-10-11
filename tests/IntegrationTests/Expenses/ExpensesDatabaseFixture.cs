@@ -11,6 +11,8 @@ public sealed class ExpensesDatabaseFixture : IAsyncLifetime
         .WithCleanUp(true)
         .Build();
 
+    public string ConnectionString => _postgreSql.GetConnectionString();
+
     public Task InitializeAsync()
     {
         throw new NotImplementedException();
