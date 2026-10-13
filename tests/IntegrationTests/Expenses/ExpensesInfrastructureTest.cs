@@ -96,6 +96,14 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
             .ContainInOrder("newest-late", "newest-early", "middle", "oldest");
     }
 
+    [Fact]
+    public async Task GetAllAsync_UserHasNoExpense_ReturnsEmptyList()
+    {
+        var result = await _repo.GetAllAsync(_userA);
+
+        result.Should().BeEmpty();
+    }
+
     // ---------- GetByIdAsync ----------
 
     [Fact]
