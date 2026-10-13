@@ -95,4 +95,19 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
             .Should()
             .ContainInOrder("newest-late", "newest-early", "middle", "oldest");
     }
+
+    // ---------- GetByIdAsync ----------
+
+    [Fact]
+    public async Task GetByIdAsync_ExpenseOfUserA_ReturnsExpense()
+    {
+        var expense = NewExpense(_userA);
+        _context.Expenses.Add(expense);
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetByIdAsync(_userA, expense.Id);
+
+        result.Should().NotBeNull();
+        result.Id.Should().Be(expense.Id);
+    }
 }
