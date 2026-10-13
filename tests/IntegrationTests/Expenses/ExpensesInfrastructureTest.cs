@@ -2,6 +2,7 @@ using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using Expenses.Infrastructure.Data;
 using Expenses.Infrastructure.Repositories;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Gas2s.IntegrationTests.Expenses;
@@ -14,6 +15,8 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
     private IDbContextTransaction _transaction = null!;
     private ExpenseRepository _repo = null!;
 
+    private readonly Guid _userA = Guid.NewGuid();
+    private readonly Guid _userB = Guid.NewGuid();
     private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
     public ExpensesInfrastructureTest(ExpensesDatabaseFixture fixture) => _fixture = fixture;
@@ -50,5 +53,23 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
             time ?? TimeOnly.FromDateTime(_nowUtc.DateTime),
             _nowUtc
         );
+    }
+
+    // ---------- GetAllAsync ----------
+
+    [Fact]
+    public async Task GetAllAsync_GetUserAExpenses_ReturnsOnlyExpensesForUserA()
+    {
+        _context.Expenses.AddRange(
+            NewExpense(_userA, description: "A1"),
+            NewExpense(_userA, description: "A2"),
+            NewExpense(_userB, description: "B1")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA);
+
+        result.Should().HaveCount(2);
+        result.Should().OnlyContain(expense => expense.UserId == _userA);
     }
 }
