@@ -118,4 +118,16 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         result.Should().NotBeNull();
         result.Id.Should().Be(expense.Id);
     }
+
+    [Fact]
+    public async Task GetByIdAsync_ExpenseNotOwnedByUser_ReturnsNull()
+    {
+        var expense = NewExpense(_userA);
+        _context.Expenses.Add(expense);
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetByIdAsync(_userB, expense.Id);
+
+        result.Should().BeNull();
+    }
 }
