@@ -72,4 +72,27 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         result.Should().HaveCount(2);
         result.Should().OnlyContain(expense => expense.UserId == _userA);
     }
+
+    [Fact]
+    public async Task GetAllAsync_ReturnsExpensesInDescendingOrder()
+    {
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: new DateOnly(2026, 9, 26), description: "middle"),
+            NewExpense(_userA, description: "newest-early"),
+            NewExpense(
+                _userA,
+                time: TimeOnly.FromDateTime(_nowUtc.AddHours(2).DateTime),
+                description: "newest-late"
+            ),
+            NewExpense(_userA, date: new DateOnly(2026, 9, 1), description: "oldest")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA);
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .ContainInOrder("newest-late", "newest-early", "middle", "oldest");
+    }
 }
