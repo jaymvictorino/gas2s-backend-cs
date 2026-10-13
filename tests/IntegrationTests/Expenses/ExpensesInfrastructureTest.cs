@@ -107,7 +107,7 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
     // ---------- GetByIdAsync ----------
 
     [Fact]
-    public async Task GetByIdAsync_ExpenseOfUserA_ReturnsExpense()
+    public async Task GetByIdAsync_ExpenseOwnedByUser_ReturnsExpense()
     {
         var expense = NewExpense(_userA);
         _context.Expenses.Add(expense);
