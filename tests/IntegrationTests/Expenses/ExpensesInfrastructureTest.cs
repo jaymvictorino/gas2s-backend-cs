@@ -3,6 +3,7 @@ using Expenses.Domain.Enums;
 using Expenses.Infrastructure.Data;
 using Expenses.Infrastructure.Repositories;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Gas2s.IntegrationTests.Expenses;
@@ -129,5 +130,27 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         var result = await _repo.GetByIdAsync(_userB, expense.Id);
 
         result.Should().BeNull();
+    }
+
+    // ---------- CreateAsync ----------
+
+    [Fact]
+    public async Task CreateAsync_PersistAndReturnsExpense()
+    {
+        var expense = NewExpense(
+            _userA,
+            amount: 127.00m,
+            category: ExpenseCategory.Clothing,
+            description: "Gift"
+        );
+
+        var persisted = await _repo.CreateAsync(expense);
+
+        persisted.Id.Should().Be(expense.Id);
+
+        var fromDb = await _context.Expenses.SingleAsync(e => e.Id == expense.Id);
+        fromDb.Amount.Should().Be(expense.Amount);
+        fromDb.Category.Should().Be(expense.Category);
+        fromDb.Description.Should().Be(expense.Description);
     }
 }
