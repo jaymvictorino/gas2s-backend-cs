@@ -153,4 +153,36 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         fromDb.Category.Should().Be(expense.Category);
         fromDb.Description.Should().Be(expense.Description);
     }
+
+    // ---------- UpdateAsync ----------
+
+    [Fact]
+    public async Task UpdateAsync_PersistsChanges_ReturnsUpdatedExpense()
+    {
+        var expense = NewExpense(_userA);
+        _context.Expenses.Add(expense);
+        await _context.SaveChangesAsync();
+
+        var tracked = await _repo.GetByIdAsync(_userA, expense.Id);
+        tracked!.Update(
+            127.00m,
+            ExpenseCategory.Clothing,
+            "Updated",
+            tracked.Date,
+            tracked.Time,
+            _nowUtc.AddHours(1)
+        );
+
+        var updated = await _repo.UpdateAsync(tracked);
+
+        updated.Id.Should().Be(expense.Id);
+        updated.Amount.Should().Be(127.00m);
+        updated.Category.Should().Be(ExpenseCategory.Clothing);
+        updated.Description.Should().Be("Updated");
+
+        var fromDb = await _context.Expenses.FindAsync(expense.Id);
+        fromDb!.Amount.Should().Be(127.00m);
+        fromDb.Category.Should().Be(ExpenseCategory.Clothing);
+        fromDb.Description.Should().Be("Updated");
+    }
 }
