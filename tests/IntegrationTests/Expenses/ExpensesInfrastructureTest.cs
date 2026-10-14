@@ -185,4 +185,21 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         fromDb.Category.Should().Be(ExpenseCategory.Clothing);
         fromDb.Description.Should().Be("Updated");
     }
+
+    // ---------- DeleteAsync ----------
+
+    [Fact]
+    public async Task DeleteAsync_RemovesExpense_ReturnsTrue()
+    {
+        var expense = NewExpense(_userA);
+        _context.Expenses.Add(expense);
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.DeleteAsync(expense);
+
+        result.Should().BeTrue();
+
+        var fromDb = await _context.Expenses.FindAsync(expense.Id);
+        fromDb.Should().BeNull();
+    }
 }
