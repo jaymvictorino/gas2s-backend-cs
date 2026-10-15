@@ -82,7 +82,7 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         );
         await _context.SaveChangesAsync();
 
-        var result = await _repo.GetAllAsync(_userA);
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
 
         result.Should().HaveCount(2);
         result.Should().OnlyContain(expense => expense.UserId == _userA);
