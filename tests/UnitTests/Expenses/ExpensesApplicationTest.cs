@@ -144,9 +144,21 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task GetExpenseHandler_EmptyRepository_Should_Return_EmptyList()
     {
-        _repo.GetAllAsync(_userId).Returns([]);
+        _repo
+            .GetAllAsync(
+                _userId,
+                ExpenseDateRangeResolver.Resolve(
+                    _filter,
+                    DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+                )
+            )
+            .Returns([]);
 
-        var result = await _get.GetExpensesAsync(_userId);
+        var result = await _get.GetExpensesAsync(
+            _userId,
+            _filter,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
 
         result.Should().BeEmpty();
     }
