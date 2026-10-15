@@ -44,6 +44,23 @@ public class ExpensesApplicationTest
         _updateExpenseRequestDtoValidator = new UpdateExpenseRequestDtoValidator();
     }
 
+    private CreateExpenseRequestDto NewCreateExpenseRequestDto(
+        decimal amount = 127.00m,
+        ExpenseCategory category = ExpenseCategory.Clothing,
+        string description = "Gift",
+        DateOnly? date = null,
+        TimeOnly? time = null
+    )
+    {
+        return new CreateExpenseRequestDto(
+            amount,
+            category,
+            description,
+            date ?? DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
+            time ?? TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
+    }
+
     [Fact]
     public async Task CreateExpenseHandler_Should_Create_New_Expense()
     {
