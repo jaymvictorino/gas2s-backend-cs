@@ -114,7 +114,7 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
     [Fact]
     public async Task GetAllAsync_UserHasNoExpense_ReturnsEmptyList()
     {
-        var result = await _repo.GetAllAsync(_userA);
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
 
         result.Should().BeEmpty();
     }
