@@ -103,7 +103,7 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         );
         await _context.SaveChangesAsync();
 
-        var result = await _repo.GetAllAsync(_userA);
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Month));
 
         result
             .Select(expense => expense.Description)
