@@ -1,3 +1,5 @@
+using Expenses.Application.Dto;
+using Expenses.Application.Filtering;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using Expenses.Infrastructure.Data;
@@ -53,6 +55,18 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
             date ?? DateOnly.FromDateTime(_nowUtc.DateTime),
             time ?? TimeOnly.FromDateTime(_nowUtc.DateTime),
             _nowUtc
+        );
+    }
+
+    private ExpenseDateRange NewFilter(
+        ExpenseRangePreset range,
+        DateOnly? from = null,
+        DateOnly? to = null
+    )
+    {
+        return ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(range, from, to),
+            DateOnly.FromDateTime(_nowUtc.DateTime)
         );
     }
 
