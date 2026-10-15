@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Filtering;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
 using Expenses.Application.Mappings;
@@ -19,6 +20,8 @@ public class ExpensesApplicationTest
     );
 
     private readonly Guid _userId = Guid.NewGuid();
+
+    private readonly ExpenseFilterRequestDto _filter = new(ExpenseRangePreset.Week, null, null);
 
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
@@ -119,9 +122,21 @@ public class ExpensesApplicationTest
 
         var expected = expenses.FindAll(e => e.UserId == _userId);
 
-        _repo.GetAllAsync(_userId).Returns(expected);
+        _repo
+            .GetAllAsync(
+                _userId,
+                ExpenseDateRangeResolver.Resolve(
+                    _filter,
+                    DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+                )
+            )
+            .Returns(expected);
 
-        var result = await _get.GetExpensesAsync(_userId);
+        var result = await _get.GetExpensesAsync(
+            _userId,
+            _filter,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        );
 
         result.Should().HaveCount(2).And.BeEquivalentTo(expected.Select(ExpenseMapper.ToDto));
     }
