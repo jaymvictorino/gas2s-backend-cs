@@ -251,35 +251,21 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task UpdateExpenseAsync_DifferentUserId_ReturnsNull()
     {
-        var expense = Expense.Create(
-            _userId,
-            100m,
-            ExpenseCategory.Groceries,
-            "Instant noodles",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            _fakeTime.GetUtcNow()
-        );
-
-        _fakeTime.Advance(TimeSpan.FromHours(1));
-
-        var dto = new UpdateExpenseRequestDto(
-            10000m,
-            ExpenseCategory.Electronics,
-            "Smartphone",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
-        );
-
         var dummy = Guid.NewGuid();
+        var expenseId = Guid.NewGuid();
 
-        _repo.GetByIdAsync(dummy, expense.Id).Returns((Expense?)null);
+        var dto = NewExpenseRequestDto(
+            (amount, category, description, date, time) =>
+                new UpdateExpenseRequestDto(amount, category, description, date, time)
+        );
+
+        _repo.GetByIdAsync(dummy, expenseId).Returns((Expense?)null);
         _repo.UpdateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
-        var result = await _update.UpdateExpenseAsync(dummy, expense.Id, dto);
+        var result = await _update.UpdateExpenseAsync(dummy, expenseId, dto);
 
         result.Should().BeNull();
-        await _repo.Received(1).GetByIdAsync(dummy, expense.Id);
+        await _repo.Received(1).GetByIdAsync(dummy, expenseId);
         await _repo.DidNotReceive().UpdateAsync(Arg.Any<Expense>());
     }
 
