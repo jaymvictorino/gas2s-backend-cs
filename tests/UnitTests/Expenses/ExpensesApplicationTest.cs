@@ -44,7 +44,8 @@ public class ExpensesApplicationTest
         _updateExpenseRequestDtoValidator = new UpdateExpenseRequestDtoValidator();
     }
 
-    private CreateExpenseRequestDto NewCreateExpenseRequestDto(
+    private T NewExpenseRequestDto<T>(
+        Func<decimal, ExpenseCategory, string, DateOnly, TimeOnly, T> factory,
         decimal amount = 127.00m,
         ExpenseCategory category = ExpenseCategory.Clothing,
         string description = "Gift",
@@ -52,7 +53,7 @@ public class ExpensesApplicationTest
         TimeOnly? time = null
     )
     {
-        return new CreateExpenseRequestDto(
+        return factory(
             amount,
             category,
             description,
