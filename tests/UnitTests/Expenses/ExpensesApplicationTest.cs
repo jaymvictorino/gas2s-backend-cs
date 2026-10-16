@@ -77,13 +77,7 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task CreateExpenseHandler_Returns_Exactly_What_Repository_Returns()
     {
-        var request = new CreateExpenseRequestDto(
-            127.00m,
-            ExpenseCategory.Clothing,
-            "Gift",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
-        );
+        var request = NewCreateExpenseRequestDto();
 
         _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
