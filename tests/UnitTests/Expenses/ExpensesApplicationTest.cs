@@ -65,7 +65,10 @@ public class ExpensesApplicationTest
     [Fact]
     public async Task CreateExpenseHandler_Should_Create_New_Expense()
     {
-        var request = NewCreateExpenseRequestDto();
+        var request = NewExpenseRequestDto(
+            (amount, category, description, date, time) =>
+                new CreateExpenseRequestDto(amount, category, description, date, time)
+        );
 
         _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
