@@ -120,8 +120,10 @@ public class ExpensesApplicationTest
         result.Time.Should().Be(TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime));
     }
 
+    // ---------- GetExpensesAsync ----------
+
     [Fact]
-    public async Task GetExpenseHandler_Should_Return_All_Expenses()
+    public async Task GetExpensesAsync_Should_Return_All_Expenses()
     {
         var expenses = new List<Expense>
         {
@@ -149,7 +151,7 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
-    public async Task GetExpenseHandler_EmptyRepository_Should_Return_EmptyList()
+    public async Task GetExpensesAsync_EmptyRepository_Should_Return_EmptyList()
     {
         _repo
             .GetAllAsync(
