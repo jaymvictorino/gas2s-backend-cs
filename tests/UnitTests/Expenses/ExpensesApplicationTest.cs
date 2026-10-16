@@ -19,6 +19,8 @@ public class ExpensesApplicationTest
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
     );
 
+    private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
+
     private readonly Guid _userId = Guid.NewGuid();
 
     private readonly ExpenseFilterRequestDto _filter = new(ExpenseRangePreset.Week, null, null);
@@ -42,6 +44,46 @@ public class ExpensesApplicationTest
         _delete = new DeleteExpenseHandler(_repo);
         _createExpenseRequestDtoValidator = new CreateExpenseRequestDtoValidator();
         _updateExpenseRequestDtoValidator = new UpdateExpenseRequestDtoValidator();
+    }
+
+    private Expense NewExpense(
+        Guid userId,
+        decimal amount = 100m,
+        ExpenseCategory category = ExpenseCategory.Groceries,
+        string? description = "test",
+        DateOnly? date = null,
+        TimeOnly? time = null
+    )
+    {
+        return Expense.Create(
+            userId,
+            amount,
+            category,
+            description,
+            date ?? DateOnly.FromDateTime(_nowUtc.DateTime),
+            time ?? TimeOnly.FromDateTime(_nowUtc.DateTime),
+            _nowUtc
+        );
+    }
+
+    private Expense NewExpense(
+        Guid userId,
+        decimal amount = 100m,
+        ExpenseCategory category = ExpenseCategory.Groceries,
+        string? description = "test",
+        DateOnly? date = null,
+        TimeOnly? time = null
+    )
+    {
+        return Expense.Create(
+            userId,
+            amount,
+            category,
+            description,
+            date ?? DateOnly.FromDateTime(_nowUtc.DateTime),
+            time ?? TimeOnly.FromDateTime(_nowUtc.DateTime),
+            _nowUtc
+        );
     }
 
     private T NewExpenseRequestDto<T>(
