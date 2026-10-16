@@ -172,18 +172,12 @@ public class ExpensesApplicationTest
         result.Should().BeEmpty();
     }
 
+    // ---------- GetExpenseByIdAsync ----------
+
     [Fact]
-    public async Task GetByIdExpenseHandler_ExistingGuid_Returns_Response()
+    public async Task GetExpenseByIdAsync_ExistingGuid_Returns_Response()
     {
-        var expense = Expense.Create(
-            _userId,
-            100,
-            ExpenseCategory.Groceries,
-            "Instant noodles",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            _fakeTime.GetUtcNow()
-        );
+        var expense = NewExpense(_userId);
 
         var id = expense.Id;
         var expected = ExpenseMapper.ToDto(expense);
@@ -197,7 +191,7 @@ public class ExpensesApplicationTest
     }
 
     [Fact]
-    public async Task GetByIdExpenseHandler_MissingGuid_Returns_Null()
+    public async Task GetExpenseByIdAsync_MissingGuid_Returns_Null()
     {
         var id = Guid.NewGuid();
 
