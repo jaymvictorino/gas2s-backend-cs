@@ -66,26 +66,6 @@ public class ExpensesApplicationTest
         );
     }
 
-    private Expense NewExpense(
-        Guid userId,
-        decimal amount = 100m,
-        ExpenseCategory category = ExpenseCategory.Groceries,
-        string? description = "test",
-        DateOnly? date = null,
-        TimeOnly? time = null
-    )
-    {
-        return Expense.Create(
-            userId,
-            amount,
-            category,
-            description,
-            date ?? DateOnly.FromDateTime(_nowUtc.DateTime),
-            time ?? TimeOnly.FromDateTime(_nowUtc.DateTime),
-            _nowUtc
-        );
-    }
-
     private T NewExpenseRequestDto<T>(
         Func<decimal, ExpenseCategory, string, DateOnly, TimeOnly, T> factory,
         decimal amount = 127.00m,
@@ -145,33 +125,9 @@ public class ExpensesApplicationTest
     {
         var expenses = new List<Expense>
         {
-            Expense.Create(
-                _userId,
-                100,
-                ExpenseCategory.Groceries,
-                "Instant noodles",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                _fakeTime.GetUtcNow()
-            ),
-            Expense.Create(
-                _userId,
-                10000,
-                ExpenseCategory.Electronics,
-                "Smartphone",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                _fakeTime.GetUtcNow()
-            ),
-            Expense.Create(
-                Guid.NewGuid(),
-                2000,
-                ExpenseCategory.Utilities,
-                "Electricity",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                _fakeTime.GetUtcNow()
-            ),
+            NewExpense(_userId),
+            NewExpense(_userId, 10000m, ExpenseCategory.Electronics, "Smartphone"),
+            NewExpense(Guid.NewGuid(), 2000, ExpenseCategory.Utilities, "Electricity"),
         };
 
         var expected = expenses.FindAll(e => e.UserId == _userId);
@@ -179,17 +135,14 @@ public class ExpensesApplicationTest
         _repo
             .GetAllAsync(
                 _userId,
-                ExpenseDateRangeResolver.Resolve(
-                    _filter,
-                    DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
-                )
+                ExpenseDateRangeResolver.Resolve(_filter, DateOnly.FromDateTime(_nowUtc.DateTime))
             )
             .Returns(expected);
 
         var result = await _get.GetExpensesAsync(
             _userId,
             _filter,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            DateOnly.FromDateTime(_nowUtc.DateTime)
         );
 
         result.Should().HaveCount(2).And.BeEquivalentTo(expected.Select(ExpenseMapper.ToDto));
