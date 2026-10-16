@@ -202,27 +202,16 @@ public class ExpensesApplicationTest
         result.Should().BeNull();
     }
 
+    // ---------- UpdateExpenseAsync ----------
+
     [Fact]
     public async Task UpdateExpenseAsync_NewInformation_ReturnsUpdatedExpense()
     {
-        var expense = Expense.Create(
-            _userId,
-            100m,
-            ExpenseCategory.Groceries,
-            "Instant noodles",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            _fakeTime.GetUtcNow()
-        );
+        var expense = NewExpense(_userId);
 
-        _fakeTime.Advance(TimeSpan.FromHours(1));
-
-        var dto = new UpdateExpenseRequestDto(
-            10000m,
-            ExpenseCategory.Electronics,
-            "Smartphone",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        var dto = NewExpenseRequestDto(
+            (amount, category, description, date, time) =>
+                new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
 
         _repo.GetByIdAsync(_userId, expense.Id).Returns(expense);
@@ -265,19 +254,16 @@ public class ExpensesApplicationTest
     {
         var dummy = Guid.NewGuid();
 
+        _repo.GetByIdAsync(_userId, dummy).Returns((Expense?)null);
+
         var result = await _update.UpdateExpenseAsync(
             _userId,
             dummy,
-            new UpdateExpenseRequestDto(
-                10000m,
-                ExpenseCategory.Electronics,
-                "Smartphone",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            NewExpenseRequestDto(
+                (amount, category, description, date, time) =>
+                    new UpdateExpenseRequestDto(amount, category, description, date, time)
             )
         );
-
-        _repo.GetByIdAsync(_userId, dummy).Returns((Expense?)null);
 
         result.Should().BeNull();
         await _repo.Received(1).GetByIdAsync(_userId, dummy);
