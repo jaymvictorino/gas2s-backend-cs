@@ -312,17 +312,16 @@ public class ExpensesApplicationTest
         await _repo.DidNotReceive().DeleteAsync(Arg.Any<Expense>());
     }
 
+    // ---------- ExpenseMapper.ToEntity ----------
+
     [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
         var expense = ExpenseMapper.ToEntity(
             _userId,
-            new CreateExpenseRequestDto(
-                127.00m,
-                ExpenseCategory.Clothing,
-                "Gift",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            NewExpenseRequestDto(
+                (amount, category, description, date, time) =>
+                    new CreateExpenseRequestDto(amount, category, description, date, time)
             )
         );
 
