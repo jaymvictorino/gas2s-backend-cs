@@ -388,8 +388,8 @@ public class ExpensesApplicationTest
     public void CreateExpenseRequestDtoValidator_CategoryNotInExpenseCategory_ValidationError()
     {
         var expenseRequestDto = NewExpenseRequestDto(
-            (amount, category, description, date, time) =>
-                new CreateExpenseRequestDto(amount, category, description, date, time)
+            (amount, _, description, date, time) =>
+                new CreateExpenseRequestDto(amount, (ExpenseCategory)999, description, date, time)
         );
 
         var validator = _createExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
@@ -403,8 +403,8 @@ public class ExpensesApplicationTest
     public void CreateExpenseRequestDtoValidator_DescriptionLengthAbove500_ValidationError()
     {
         var expenseRequestDto = NewExpenseRequestDto(
-            (amount, category, description, date, time) =>
-                new CreateExpenseRequestDto(amount, category, description, date, time)
+            (amount, category, _, date, time) =>
+                new CreateExpenseRequestDto(amount, category, new string('x', 501), date, time)
         );
 
         var validator = _createExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
