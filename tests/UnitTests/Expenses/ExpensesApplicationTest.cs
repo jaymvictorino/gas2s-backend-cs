@@ -329,20 +329,12 @@ public class ExpensesApplicationTest
         expense.UserId.Should().Be(_userId);
     }
 
+    // ---------- ExpenseMapper.ToDto ----------
+
     [Fact]
     public void ToDto_ConvertExpense_ReturnsExpenseResponseDto()
     {
-        var expResDto = ExpenseMapper.ToDto(
-            Expense.Create(
-                _userId,
-                127.00m,
-                ExpenseCategory.Clothing,
-                "Gift",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-                _fakeTime.GetUtcNow()
-            )
-        );
+        var expResDto = ExpenseMapper.ToDto(NewExpense(_userId));
 
         expResDto.Should().BeOfType<ExpenseResponseDto>();
         expResDto.Id.Should().NotBeEmpty();
