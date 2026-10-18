@@ -345,7 +345,7 @@ public class ExpensesApplicationTest
     // ---------- CreateExpenseRequestDtoValidator ----------
 
     [Theory]
-    [InlineData(0m)]
+    [InlineData(0)]
     [InlineData(-0.1)]
     [InlineData(-1)]
     public void CreateExpenseRequestDtoValidator_AmountLessThanOrEqualToZero_ValidationError(
@@ -414,6 +414,8 @@ public class ExpensesApplicationTest
             .WithErrorMessage("Description cannot exceed 500 characters.");
     }
 
+    // ---------- UpdateExpenseRequestDtoValidator ----------
+
     [Theory]
     [InlineData(0)]
     [InlineData(-0.1)]
@@ -422,12 +424,9 @@ public class ExpensesApplicationTest
         decimal amount
     )
     {
-        var zeroOrNegativeAmount = new UpdateExpenseRequestDto(
-            amount,
-            ExpenseCategory.Clothing,
-            "Gift",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        var zeroOrNegativeAmount = NewExpenseRequestDto(
+            (_, category, description, date, time) =>
+                new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
 
         var validator = _updateExpenseRequestDtoValidator.TestValidate(zeroOrNegativeAmount);
@@ -445,12 +444,9 @@ public class ExpensesApplicationTest
         decimal amount
     )
     {
-        var expenseRequestDto = new UpdateExpenseRequestDto(
-            amount,
-            ExpenseCategory.Clothing,
-            "Gift",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        var expenseRequestDto = NewExpenseRequestDto(
+            (_, category, description, date, time) =>
+                new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
 
         var validator = _updateExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
@@ -463,12 +459,9 @@ public class ExpensesApplicationTest
     [Fact]
     public void UpdateExpenseRequestDtoValidator_CategoryNotInExpenseCategory_ValidationError()
     {
-        var expenseRequestDto = new UpdateExpenseRequestDto(
-            127.00m,
-            (ExpenseCategory)999,
-            "Gift",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        var expenseRequestDto = NewExpenseRequestDto(
+            (amount, _, description, date, time) =>
+                new UpdateExpenseRequestDto(amount, (ExpenseCategory)999, description, date, time)
         );
 
         var validator = _updateExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
@@ -481,12 +474,9 @@ public class ExpensesApplicationTest
     [Fact]
     public void UpdateExpenseRequestDtoValidator_DescriptionLengthAbove500_ValidationError()
     {
-        var expenseRequestDto = new UpdateExpenseRequestDto(
-            127.00m,
-            ExpenseCategory.Clothing,
-            new string('x', 501),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+        var expenseRequestDto = NewExpenseRequestDto(
+            (amount, category, _, date, time) =>
+                new UpdateExpenseRequestDto(amount, category, new string('x', 501), date, time)
         );
 
         var validator = _updateExpenseRequestDtoValidator.TestValidate(expenseRequestDto);
