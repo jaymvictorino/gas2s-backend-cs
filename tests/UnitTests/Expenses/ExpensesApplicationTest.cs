@@ -270,27 +270,18 @@ public class ExpensesApplicationTest
         await _repo.DidNotReceive().UpdateAsync(Arg.Any<Expense>());
     }
 
+    // ---------- DeleteExpenseAsync ----------
+
     [Fact]
     public async Task DeleteExpenseAsync_ExpenseExists_DeletesExpenseReturnsTrue()
     {
-        var expense = Expense.Create(
-            _userId,
-            100,
-            ExpenseCategory.Groceries,
-            "Instant noodles",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            _fakeTime.GetUtcNow()
-        );
+        var expense = NewExpense(_userId);
 
-        var otherExpense = Expense.Create(
+        var otherExpense = NewExpense(
             Guid.NewGuid(),
-            2000,
+            2000m,
             ExpenseCategory.Utilities,
-            "Electricity",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            _fakeTime.GetUtcNow()
+            "Electricity"
         );
 
         var expenses = new List<Expense> { expense, otherExpense };
