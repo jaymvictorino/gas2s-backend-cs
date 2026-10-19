@@ -68,4 +68,14 @@ public class ExpenseFilterRequestDtoValidatorTests
             .ShouldHaveValidationErrorFor(dto => dto.From)
             .WithErrorMessage("From date required.");
     }
+
+    [Fact]
+    public void ExpenseFilterRequestDtoValidator_CustomMissingToDate_ValidationError()
+    {
+        var filter = NewFilter(ExpenseRangePreset.Custom, new DateOnly(2026, 9, 21));
+
+        var result = _filterRequestDtoValidator.TestValidate(filter);
+
+        result.ShouldHaveValidationErrorFor(dto => dto.To).WithErrorMessage("To date required.");
+    }
 }
