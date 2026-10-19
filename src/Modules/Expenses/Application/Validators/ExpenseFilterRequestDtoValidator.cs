@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Enums;
 using FluentValidation;
 
 namespace Expenses.Application.Validators;
@@ -13,8 +14,16 @@ public class ExpenseFilterRequestDtoValidator : AbstractValidator<ExpenseFilterR
             dto => dto.Range == ExpenseRangePreset.Custom,
             () =>
             {
-                RuleFor(dto => dto.From).NotNull().WithMessage("From date required.");
-                RuleFor(dto => dto.To).NotNull().WithMessage("To date required.");
+                RuleFor(dto => dto.From)
+                    .NotNull()
+                    .WithMessage("From date required.")
+                    .LessThanOrEqualTo(dto => dto.To)
+                    .WithMessage("From date must be before the To date.");
+                RuleFor(dto => dto.To)
+                    .NotNull()
+                    .WithMessage("To date required.")
+                    .GreaterThanOrEqualTo(dto => dto.From)
+                    .WithMessage("To date must be after the From date.");
             }
         );
     }

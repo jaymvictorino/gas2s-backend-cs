@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Enums;
 
 namespace Expenses.Application.Filtering;
 
