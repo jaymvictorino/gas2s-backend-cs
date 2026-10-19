@@ -8,17 +8,12 @@ using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using FluentAssertions;
 using FluentValidation.TestHelper;
-using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 
 namespace Gas2s.UnitTests.Expenses;
 
 public class ExpensesApplicationTest
 {
-    private readonly FakeTimeProvider _fakeTime = new(
-        new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
-    );
-
     private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
     private readonly Guid _userId = Guid.NewGuid();
@@ -79,8 +74,8 @@ public class ExpensesApplicationTest
             amount,
             category,
             description,
-            date ?? DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime),
-            time ?? TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            date ?? DateOnly.FromDateTime(_nowUtc.DateTime),
+            time ?? TimeOnly.FromDateTime(_nowUtc.DateTime)
         );
     }
 
@@ -118,8 +113,8 @@ public class ExpensesApplicationTest
         result.Amount.Should().Be(127.00m);
         result.Category.Should().Be(ExpenseCategory.Clothing);
         result.Description.Should().Be("Gift");
-        result.Date.Should().Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime));
-        result.Time.Should().Be(TimeOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime));
+        result.Date.Should().Be(DateOnly.FromDateTime(_nowUtc.DateTime));
+        result.Time.Should().Be(TimeOnly.FromDateTime(_nowUtc.DateTime));
     }
 
     // ---------- GetExpensesAsync ----------
@@ -158,17 +153,14 @@ public class ExpensesApplicationTest
         _repo
             .GetAllAsync(
                 _userId,
-                ExpenseDateRangeResolver.Resolve(
-                    _filter,
-                    DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
-                )
+                ExpenseDateRangeResolver.Resolve(_filter, DateOnly.FromDateTime(_nowUtc.DateTime))
             )
             .Returns([]);
 
         var result = await _get.GetExpensesAsync(
             _userId,
             _filter,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().DateTime)
+            DateOnly.FromDateTime(_nowUtc.DateTime)
         );
 
         result.Should().BeEmpty();
