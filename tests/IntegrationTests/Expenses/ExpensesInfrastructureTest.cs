@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Enums;
 using Expenses.Application.Filtering;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;

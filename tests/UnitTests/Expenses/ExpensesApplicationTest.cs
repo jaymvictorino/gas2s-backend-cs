@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Enums;
 using Expenses.Application.Filtering;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
