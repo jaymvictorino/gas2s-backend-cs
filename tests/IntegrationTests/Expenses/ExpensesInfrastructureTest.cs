@@ -176,6 +176,31 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetAllAsync_CustomPreset_ReturnsOnlyExpensesWithinExplicitRange()
+    {
+        var from = new DateOnly(2026, 9, 10);
+        var to = new DateOnly(2026, 9, 20);
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: from.AddDays(-1), description: "before-range"),
+            NewExpense(_userA, date: from, description: "start-of-range"),
+            NewExpense(_userA, date: new DateOnly(2026, 9, 15), description: "inside-range"),
+            NewExpense(_userA, date: to, description: "end-of-range"),
+            NewExpense(_userA, date: to.AddDays(1), description: "after-range")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(
+            _userA,
+            NewFilter(ExpenseRangePreset.Custom, from, to)
+        );
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("start-of-range", "inside-range", "end-of-range");
+    }
+
+    [Fact]
     public async Task GetAllAsync_UserHasNoExpense_ReturnsEmptyList()
     {
         var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
