@@ -3,9 +3,13 @@ using Expenses.Domain.Entities;
 
 namespace Expenses.Application.Mappings;
 
-public class ExpenseMapper
+public static class ExpenseMapper
 {
-    public static Expense ToEntity(Guid userId, CreateExpenseRequestDto createExpenseRequestDto) =>
+    public static Expense ToEntity(
+        Guid userId,
+        CreateExpenseRequestDto createExpenseRequestDto,
+        DateTimeOffset createdAt
+    ) =>
         Expense.Create(
             userId,
             createExpenseRequestDto.Amount,
@@ -13,7 +17,7 @@ public class ExpenseMapper
             createExpenseRequestDto.Description,
             createExpenseRequestDto.Date,
             createExpenseRequestDto.Time,
-            DateTimeOffset.UtcNow
+            createdAt
         );
 
     public static ExpenseResponseDto ToDto(Expense expense) =>
