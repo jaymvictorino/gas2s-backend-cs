@@ -28,4 +28,18 @@ public class ExpenseFilterRequestDtoValidatorTests
 
         result.ShouldNotHaveAnyValidationErrors();
     }
+
+    [Fact]
+    public void ExpenseFilterRequestDtoValidator_NonCustomWithValidDates_NoErrors()
+    {
+        var filter = NewFilter(
+            ExpenseRangePreset.Week,
+            new DateOnly(2026, 9, 27),
+            new DateOnly(2026, 9, 21)
+        );
+
+        var result = _filterRequestDtoValidator.TestValidate(filter);
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
 }
