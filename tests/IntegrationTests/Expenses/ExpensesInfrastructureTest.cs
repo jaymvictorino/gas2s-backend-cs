@@ -156,6 +156,26 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetAllAsync_ThreeMonthsPreset_ReturnsOnlyExpensesWithinLastThreeMonths()
+    {
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: new DateOnly(2026, 9, 27), description: "today"),
+            NewExpense(_userA, date: new DateOnly(2026, 8, 15), description: "one-month-ago"),
+            NewExpense(_userA, date: new DateOnly(2026, 7, 5), description: "two-months-ago"),
+            NewExpense(_userA, date: new DateOnly(2026, 6, 1), description: "three-months-ago"),
+            NewExpense(_userA, date: new DateOnly(2026, 1, 1), description: "long-ago")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.ThreeMonths));
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("today", "one-month-ago", "two-months-ago");
+    }
+
+    [Fact]
     public async Task GetAllAsync_UserHasNoExpense_ReturnsEmptyList()
     {
         var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
