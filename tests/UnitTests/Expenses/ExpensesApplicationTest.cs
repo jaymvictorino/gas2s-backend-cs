@@ -316,7 +316,8 @@ public class ExpensesApplicationTest
             NewExpenseRequestDto(
                 (amount, category, description, date, time) =>
                     new CreateExpenseRequestDto(amount, category, description, date, time)
-            )
+            ),
+            _nowUtc
         );
 
         expense.Should().BeOfType<Expense>();
