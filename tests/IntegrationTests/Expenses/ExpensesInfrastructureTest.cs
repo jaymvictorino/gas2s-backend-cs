@@ -21,6 +21,8 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
 
     private readonly Guid _userA = Guid.NewGuid();
     private readonly Guid _userB = Guid.NewGuid();
+
+    // Septemper 27, 2026 14:00 UTC
     private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
     public ExpensesInfrastructureTest(ExpensesDatabaseFixture fixture) => _fixture = fixture;
@@ -110,6 +112,27 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
             .Select(expense => expense.Description)
             .Should()
             .ContainInOrder("newest-late", "newest-early", "middle", "oldest");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_WeekPreset_ReturnsOnlyExpensesWithinLastWeek()
+    {
+        var today = DateOnly.FromDateTime(_nowUtc.DateTime);
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: today, description: "today"),
+            NewExpense(_userA, date: today.AddDays(-1), description: "yesterday"),
+            NewExpense(_userA, date: today.AddDays(-5), description: "five-days-ago"),
+            NewExpense(_userA, date: today.AddDays(-8), description: "eight-days-ago"),
+            NewExpense(_userA, date: today.AddDays(-30), description: "thirty-days-ago")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("today", "yesterday", "five-days-ago");
     }
 
     [Fact]
