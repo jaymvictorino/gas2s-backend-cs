@@ -58,6 +58,17 @@ public class ExpenseFilterRequestDtoValidatorTests
     }
 
     [Fact]
+    public void ExpenseFilterRequestDtoValidator_CustomWithEqualDates_NoErrors()
+    {
+        var date = new DateOnly(2026, 9, 21);
+        var filter = NewFilter(ExpenseRangePreset.Week, date, date);
+
+        var result = _filterRequestDtoValidator.TestValidate(filter);
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
     public void ExpenseFilterRequestDtoValidator_CustomMissingFromDate_ValidationError()
     {
         var filter = NewFilter(ExpenseRangePreset.Custom, null, new DateOnly(2026, 9, 27));
@@ -78,4 +89,6 @@ public class ExpenseFilterRequestDtoValidatorTests
 
         result.ShouldHaveValidationErrorFor(dto => dto.To).WithErrorMessage("To date required.");
     }
+
+    // TODO: add more tests
 }
