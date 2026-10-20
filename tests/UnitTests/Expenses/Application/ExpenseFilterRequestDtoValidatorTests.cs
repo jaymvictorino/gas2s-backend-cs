@@ -102,4 +102,23 @@ public class ExpenseFilterRequestDtoValidatorTests
             .WithErrorMessage("From date required.");
         result.ShouldHaveValidationErrorFor(dto => dto.To).WithErrorMessage("To date required.");
     }
+
+    [Fact]
+    public void ExpenseFilterRequestDtoValidator_CustomFromDateAfterToDate_ValidationErrors()
+    {
+        var filter = NewFilter(
+            ExpenseRangePreset.Custom,
+            new DateOnly(2026, 9, 27),
+            new DateOnly(2026, 9, 21)
+        );
+
+        var result = _filterRequestDtoValidator.TestValidate(filter);
+
+        result
+            .ShouldHaveValidationErrorFor(dto => dto.From)
+            .WithErrorMessage("From date must be before the To date.");
+        result
+            .ShouldHaveValidationErrorFor(dto => dto.To)
+            .WithErrorMessage("To date must be after the From date.");
+    }
 }
