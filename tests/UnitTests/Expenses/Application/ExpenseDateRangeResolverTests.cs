@@ -97,4 +97,16 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(new DateOnly(2026, 2, 1));
         range.To.Should().Be(today);
     }
+
+    [Fact]
+    public void Resolve_ThreeMonths_ReturnsExpenseDateRangeFromFirstDayOfThreeMonthsBack()
+    {
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.ThreeMonths, null, null),
+            _today
+        );
+
+        range.From.Should().Be(new DateOnly(2026, 7, 1));
+        range.To.Should().Be(_today);
+    }
 }
