@@ -121,4 +121,16 @@ public class ExpenseFilterRequestDtoValidatorTests
             .ShouldHaveValidationErrorFor(dto => dto.To)
             .WithErrorMessage("To date must be after the From date.");
     }
+
+    [Fact]
+    public void ExpenseFilterRequestDtoValidator_InvalidExpenseRangePreset_ValidationError()
+    {
+        var filter = NewFilter((ExpenseRangePreset)999);
+
+        var result = _filterRequestDtoValidator.TestValidate(filter);
+
+        result
+            .ShouldHaveValidationErrorFor(dto => dto.Range)
+            .WithErrorMessage("Invalid ExpenseRangePreset value.");
+    }
 }
