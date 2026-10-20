@@ -109,4 +109,17 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(new DateOnly(2026, 7, 1));
         range.To.Should().Be(_today);
     }
+
+    [Fact]
+    public void Resolve_ThreeMonths_CrossesYearBoundary()
+    {
+        var today = new DateOnly(2026, 1, 1);
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.ThreeMonths, null, null),
+            today
+        );
+
+        range.From.Should().Be(new DateOnly(2025, 11, 1));
+        range.To.Should().Be(today);
+    }
 }
