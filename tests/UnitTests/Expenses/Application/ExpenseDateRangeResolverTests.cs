@@ -84,4 +84,17 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(new DateOnly(2026, 9, 1));
         range.To.Should().Be(today);
     }
+
+    [Fact]
+    public void Resolve_Month_LeapYearFebruary_StartsOnFebruaryFirst()
+    {
+        var today = new DateOnly(2026, 2, 28);
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.Month, null, null),
+            today
+        );
+
+        range.From.Should().Be(new DateOnly(2026, 2, 1));
+        range.To.Should().Be(today);
+    }
 }
