@@ -58,4 +58,17 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(new DateOnly(2026, 9, 1));
         range.To.Should().Be(_today);
     }
+
+    [Fact]
+    public void Resolve_Month_OnFirstDayOfMonth_ReturnsSingleDayExpenseDateRange()
+    {
+        var today = new DateOnly(2026, 9, 1);
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.Month, null, null),
+            today
+        );
+
+        range.From.Should().Be(today);
+        range.To.Should().Be(today);
+    }
 }
