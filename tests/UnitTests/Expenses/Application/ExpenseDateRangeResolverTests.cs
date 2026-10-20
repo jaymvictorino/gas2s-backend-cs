@@ -33,4 +33,17 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(new DateOnly(2026, 8, 26));
         range.To.Should().Be(today);
     }
+
+    [Fact]
+    public void Resolve_Week_CrossesYearBoundary()
+    {
+        var today = new DateOnly(2026, 1, 1);
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.Week, null, null),
+            today
+        );
+
+        range.From.Should().Be(new DateOnly(2025, 12, 26));
+        range.To.Should().Be(today);
+    }
 }
