@@ -164,4 +164,16 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(day);
         range.To.Should().Be(day);
     }
+
+    [Fact]
+    public void Resolve_InvalidExpenseRangePreset_ThrowsError()
+    {
+        var range = () =>
+            ExpenseDateRangeResolver.Resolve(
+                new ExpenseFilterRequestDto((ExpenseRangePreset)999, null, null),
+                _today
+            );
+
+        range.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("filter");
+    }
 }
