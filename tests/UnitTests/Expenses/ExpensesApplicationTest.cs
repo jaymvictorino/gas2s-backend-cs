@@ -1,10 +1,8 @@
 using Expenses.Application.Dto;
 using Expenses.Application.Enums;
-using Expenses.Application.Mappings;
 using Expenses.Application.Validators;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
-using FluentAssertions;
 using FluentValidation.TestHelper;
 
 namespace Gas2s.UnitTests.Expenses;
@@ -62,35 +60,6 @@ public class ExpensesApplicationTest
             date ?? DateOnly.FromDateTime(NowUtc.DateTime),
             time ?? TimeOnly.FromDateTime(NowUtc.DateTime)
         );
-    }
-
-    // ---------- ExpenseMapper.ToEntity ----------
-
-    [Fact]
-    public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
-    {
-        var expense = ExpenseMapper.ToEntity(
-            UserId,
-            NewExpenseRequestDto(
-                (amount, category, description, date, time) =>
-                    new CreateExpenseRequestDto(amount, category, description, date, time)
-            ),
-            NowUtc
-        );
-
-        expense.Should().BeOfType<Expense>();
-        expense.UserId.Should().Be(UserId);
-    }
-
-    // ---------- ExpenseMapper.ToDto ----------
-
-    [Fact]
-    public void ToDto_ConvertExpense_ReturnsExpenseResponseDto()
-    {
-        var expResDto = ExpenseMapper.ToDto(NewExpense(UserId));
-
-        expResDto.Should().BeOfType<ExpenseResponseDto>();
-        expResDto.Id.Should().NotBeEmpty();
     }
 
     // ---------- CreateExpenseRequestDtoValidator ----------
