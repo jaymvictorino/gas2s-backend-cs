@@ -12,7 +12,7 @@ namespace Gas2s.UnitTests.Expenses.Application;
 
 public class ExpensesApplicationHandlersTests
 {
-    private readonly ExpensesApplicationTest _application;
+    private readonly ExpensesApplicationFixture _application;
 
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
@@ -23,7 +23,7 @@ public class ExpensesApplicationHandlersTests
 
     public ExpensesApplicationHandlersTests()
     {
-        _application = new ExpensesApplicationTest();
+        _application = new ExpensesApplicationFixture();
         _create = new CreateExpenseHandler(_repo);
         _get = new GetExpensesHandler(_repo);
         _getById = new GetExpenseByIdHandler(_repo);

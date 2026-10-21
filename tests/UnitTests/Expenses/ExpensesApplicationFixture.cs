@@ -5,7 +5,7 @@ using Expenses.Domain.Enums;
 
 namespace Gas2s.UnitTests.Expenses;
 
-public class ExpensesApplicationTest
+public class ExpensesApplicationFixture
 {
     protected internal DateTimeOffset NowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 

@@ -8,7 +8,7 @@ namespace Gas2s.UnitTests.Expenses.Application;
 
 public class ExpensesApplicationValidatorsTests
 {
-    private readonly ExpensesApplicationTest _application;
+    private readonly ExpensesApplicationFixture _application;
 
     private readonly CreateExpenseRequestDtoValidator _createExpenseRequestDtoValidator;
     private readonly ExpenseFilterRequestDtoValidator _filterRequestDtoValidator;
@@ -16,7 +16,7 @@ public class ExpensesApplicationValidatorsTests
 
     public ExpensesApplicationValidatorsTests()
     {
-        _application = new ExpensesApplicationTest();
+        _application = new ExpensesApplicationFixture();
         _createExpenseRequestDtoValidator = new CreateExpenseRequestDtoValidator();
         _filterRequestDtoValidator = new ExpenseFilterRequestDtoValidator();
         _updateExpenseRequestDtoValidator = new UpdateExpenseRequestDtoValidator();

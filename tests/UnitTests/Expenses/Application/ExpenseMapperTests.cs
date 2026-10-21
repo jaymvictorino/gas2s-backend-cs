@@ -7,9 +7,9 @@ namespace Gas2s.UnitTests.Expenses.Application;
 
 public class ExpenseMapperTests
 {
-    private readonly ExpensesApplicationTest _application;
+    private readonly ExpensesApplicationFixture _application;
 
-    public ExpenseMapperTests() => _application = new ExpensesApplicationTest();
+    public ExpenseMapperTests() => _application = new ExpensesApplicationFixture();
 
     // ---------- ExpenseMapper.ToEntity ----------
 
