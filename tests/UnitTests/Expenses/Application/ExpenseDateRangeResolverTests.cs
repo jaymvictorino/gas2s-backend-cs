@@ -150,4 +150,18 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(from);
         range.To.Should().Be(to);
     }
+
+    [Fact]
+    public void Resolve_Custom_SingleDay_ReturnsSameDay()
+    {
+        var day = new DateOnly(2026, 9, 21);
+
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.Custom, day, day),
+            _today
+        );
+
+        range.From.Should().Be(day);
+        range.To.Should().Be(day);
+    }
 }
