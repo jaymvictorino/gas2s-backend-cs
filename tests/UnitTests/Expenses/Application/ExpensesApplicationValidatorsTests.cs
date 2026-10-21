@@ -8,21 +8,18 @@ namespace Gas2s.UnitTests.Expenses.Application;
 
 public class ExpensesApplicationValidatorsTests
 {
-    private readonly ExpensesApplicationFixture _application;
-
     private readonly CreateExpenseRequestDtoValidator _createExpenseRequestDtoValidator;
     private readonly ExpenseFilterRequestDtoValidator _filterRequestDtoValidator;
     private readonly UpdateExpenseRequestDtoValidator _updateExpenseRequestDtoValidator;
 
     public ExpensesApplicationValidatorsTests()
     {
-        _application = new ExpensesApplicationFixture();
         _createExpenseRequestDtoValidator = new CreateExpenseRequestDtoValidator();
         _filterRequestDtoValidator = new ExpenseFilterRequestDtoValidator();
         _updateExpenseRequestDtoValidator = new UpdateExpenseRequestDtoValidator();
     }
 
-    private ExpenseFilterRequestDto NewFilter(
+    private static ExpenseFilterRequestDto NewFilter(
         ExpenseRangePreset range,
         DateOnly? from = null,
         DateOnly? to = null
@@ -38,7 +35,7 @@ public class ExpensesApplicationValidatorsTests
         decimal amount
     )
     {
-        var zeroOrNegativeAmount = _application.NewExpenseRequestDto(
+        var zeroOrNegativeAmount = ExpensesApplicationFixture.NewExpenseRequestDto(
             (_, category, description, date, time) =>
                 new CreateExpenseRequestDto(amount, category, description, date, time)
         );
@@ -58,7 +55,7 @@ public class ExpensesApplicationValidatorsTests
         decimal amount
     )
     {
-        var expenseRequestDto = _application.NewExpenseRequestDto(
+        var expenseRequestDto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (_, category, description, date, time) =>
                 new CreateExpenseRequestDto(amount, category, description, date, time)
         );
@@ -73,7 +70,7 @@ public class ExpensesApplicationValidatorsTests
     [Fact]
     public void CreateExpenseRequestDtoValidator_CategoryNotInExpenseCategory_ValidationError()
     {
-        var expenseRequestDto = _application.NewExpenseRequestDto(
+        var expenseRequestDto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, _, description, date, time) =>
                 new CreateExpenseRequestDto(amount, (ExpenseCategory)999, description, date, time)
         );
@@ -88,7 +85,7 @@ public class ExpensesApplicationValidatorsTests
     [Fact]
     public void CreateExpenseRequestDtoValidator_DescriptionLengthAbove500_ValidationError()
     {
-        var expenseRequestDto = _application.NewExpenseRequestDto(
+        var expenseRequestDto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, _, date, time) =>
                 new CreateExpenseRequestDto(amount, category, new string('x', 501), date, time)
         );
@@ -110,7 +107,7 @@ public class ExpensesApplicationValidatorsTests
         decimal amount
     )
     {
-        var zeroOrNegativeAmount = _application.NewExpenseRequestDto(
+        var zeroOrNegativeAmount = ExpensesApplicationFixture.NewExpenseRequestDto(
             (_, category, description, date, time) =>
                 new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
@@ -130,7 +127,7 @@ public class ExpensesApplicationValidatorsTests
         decimal amount
     )
     {
-        var expenseRequestDto = _application.NewExpenseRequestDto(
+        var expenseRequestDto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (_, category, description, date, time) =>
                 new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
@@ -145,7 +142,7 @@ public class ExpensesApplicationValidatorsTests
     [Fact]
     public void UpdateExpenseRequestDtoValidator_CategoryNotInExpenseCategory_ValidationError()
     {
-        var expenseRequestDto = _application.NewExpenseRequestDto(
+        var expenseRequestDto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, _, description, date, time) =>
                 new UpdateExpenseRequestDto(amount, (ExpenseCategory)999, description, date, time)
         );
@@ -160,7 +157,7 @@ public class ExpensesApplicationValidatorsTests
     [Fact]
     public void UpdateExpenseRequestDtoValidator_DescriptionLengthAbove500_ValidationError()
     {
-        var expenseRequestDto = _application.NewExpenseRequestDto(
+        var expenseRequestDto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, _, date, time) =>
                 new UpdateExpenseRequestDto(amount, category, new string('x', 501), date, time)
         );

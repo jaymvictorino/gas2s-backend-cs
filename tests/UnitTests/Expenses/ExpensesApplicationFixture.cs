@@ -5,15 +5,15 @@ using Expenses.Domain.Enums;
 
 namespace Gas2s.UnitTests.Expenses;
 
-public class ExpensesApplicationFixture
+internal static class ExpensesApplicationFixture
 {
-    protected internal DateTimeOffset NowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
+    internal static DateTimeOffset NowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
-    protected internal Guid UserId = Guid.NewGuid();
+    internal static Guid UserId = Guid.NewGuid();
 
-    protected internal ExpenseFilterRequestDto Filter = new(ExpenseRangePreset.Week, null, null);
+    internal static ExpenseFilterRequestDto Filter = new(ExpenseRangePreset.Week, null, null);
 
-    protected internal Expense NewExpense(
+    internal static Expense NewExpense(
         Guid userId,
         decimal amount = 100m,
         ExpenseCategory category = ExpenseCategory.Groceries,
@@ -33,7 +33,7 @@ public class ExpensesApplicationFixture
         );
     }
 
-    protected internal T NewExpenseRequestDto<T>(
+    internal static T NewExpenseRequestDto<T>(
         Func<decimal, ExpenseCategory, string, DateOnly, TimeOnly, T> factory,
         decimal amount = 127.00m,
         ExpenseCategory category = ExpenseCategory.Clothing,

@@ -7,26 +7,22 @@ namespace Gas2s.UnitTests.Expenses.Application;
 
 public class ExpenseMapperTests
 {
-    private readonly ExpensesApplicationFixture _application;
-
-    public ExpenseMapperTests() => _application = new ExpensesApplicationFixture();
-
     // ---------- ExpenseMapper.ToEntity ----------
 
     [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
         var expense = ExpenseMapper.ToEntity(
-            _application.UserId,
-            _application.NewExpenseRequestDto(
+            ExpensesApplicationFixture.UserId,
+            ExpensesApplicationFixture.NewExpenseRequestDto(
                 (amount, category, description, date, time) =>
                     new CreateExpenseRequestDto(amount, category, description, date, time)
             ),
-            _application.NowUtc
+            ExpensesApplicationFixture.NowUtc
         );
 
         expense.Should().BeOfType<Expense>();
-        expense.UserId.Should().Be(_application.UserId);
+        expense.UserId.Should().Be(ExpensesApplicationFixture.UserId);
     }
 
     // ---------- ExpenseMapper.ToDto ----------
@@ -34,7 +30,9 @@ public class ExpenseMapperTests
     [Fact]
     public void ToDto_ConvertExpense_ReturnsExpenseResponseDto()
     {
-        var expResDto = ExpenseMapper.ToDto(_application.NewExpense(_application.UserId));
+        var expResDto = ExpenseMapper.ToDto(
+            ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId)
+        );
 
         expResDto.Should().BeOfType<ExpenseResponseDto>();
         expResDto.Id.Should().NotBeEmpty();

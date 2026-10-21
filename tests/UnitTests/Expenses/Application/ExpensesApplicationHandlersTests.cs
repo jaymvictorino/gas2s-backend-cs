@@ -12,8 +12,6 @@ namespace Gas2s.UnitTests.Expenses.Application;
 
 public class ExpensesApplicationHandlersTests
 {
-    private readonly ExpensesApplicationFixture _application;
-
     private readonly IExpenseRepository _repo = Substitute.For<IExpenseRepository>();
     private readonly CreateExpenseHandler _create;
     private readonly GetExpensesHandler _get;
@@ -23,7 +21,6 @@ public class ExpensesApplicationHandlersTests
 
     public ExpensesApplicationHandlersTests()
     {
-        _application = new ExpensesApplicationFixture();
         _create = new CreateExpenseHandler(_repo);
         _get = new GetExpensesHandler(_repo);
         _getById = new GetExpenseByIdHandler(_repo);
@@ -36,14 +33,14 @@ public class ExpensesApplicationHandlersTests
     [Fact]
     public async Task CreateExpenseAsync_Should_Create_New_Expense()
     {
-        var request = _application.NewExpenseRequestDto(
+        var request = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, description, date, time) =>
                 new CreateExpenseRequestDto(amount, category, description, date, time)
         );
 
         _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
-        var result = await _create.CreateExpenseAsync(_application.UserId, request);
+        var result = await _create.CreateExpenseAsync(ExpensesApplicationFixture.UserId, request);
 
         result.Should().NotBeNull().And.BeOfType<ExpenseResponseDto>();
         await _repo.Received(1).CreateAsync(Arg.Any<Expense>());
@@ -52,21 +49,21 @@ public class ExpensesApplicationHandlersTests
     [Fact]
     public async Task CreateExpenseAsync_Returns_Exactly_What_Repository_Returns()
     {
-        var request = _application.NewExpenseRequestDto(
+        var request = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, description, date, time) =>
                 new CreateExpenseRequestDto(amount, category, description, date, time)
         );
 
         _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
-        var result = await _create.CreateExpenseAsync(_application.UserId, request);
+        var result = await _create.CreateExpenseAsync(ExpensesApplicationFixture.UserId, request);
 
         result.Id.Should().NotBeEmpty();
         result.Amount.Should().Be(127.00m);
         result.Category.Should().Be(ExpenseCategory.Clothing);
         result.Description.Should().Be("Gift");
-        result.Date.Should().Be(DateOnly.FromDateTime(_application.NowUtc.DateTime));
-        result.Time.Should().Be(TimeOnly.FromDateTime(_application.NowUtc.DateTime));
+        result.Date.Should().Be(DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime));
+        result.Time.Should().Be(TimeOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime));
     }
 
     // ---------- GetExpensesAsync ----------
@@ -76,32 +73,37 @@ public class ExpensesApplicationHandlersTests
     {
         var expenses = new List<Expense>
         {
-            _application.NewExpense(_application.UserId),
-            _application.NewExpense(
-                _application.UserId,
+            ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId),
+            ExpensesApplicationFixture.NewExpense(
+                ExpensesApplicationFixture.UserId,
                 10000m,
                 ExpenseCategory.Electronics,
                 "Smartphone"
             ),
-            _application.NewExpense(Guid.NewGuid(), 2000, ExpenseCategory.Utilities, "Electricity"),
+            ExpensesApplicationFixture.NewExpense(
+                Guid.NewGuid(),
+                2000,
+                ExpenseCategory.Utilities,
+                "Electricity"
+            ),
         };
 
-        var expected = expenses.FindAll(e => e.UserId == _application.UserId);
+        var expected = expenses.FindAll(e => e.UserId == ExpensesApplicationFixture.UserId);
 
         _repo
             .GetAllAsync(
-                _application.UserId,
+                ExpensesApplicationFixture.UserId,
                 ExpenseDateRangeResolver.Resolve(
-                    _application.Filter,
-                    DateOnly.FromDateTime(_application.NowUtc.DateTime)
+                    ExpensesApplicationFixture.Filter,
+                    DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime)
                 )
             )
             .Returns(expected);
 
         var result = await _get.GetExpensesAsync(
-            _application.UserId,
-            _application.Filter,
-            DateOnly.FromDateTime(_application.NowUtc.DateTime)
+            ExpensesApplicationFixture.UserId,
+            ExpensesApplicationFixture.Filter,
+            DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime)
         );
 
         result.Should().HaveCount(2).And.BeEquivalentTo(expected.Select(ExpenseMapper.ToDto));
@@ -114,18 +116,18 @@ public class ExpensesApplicationHandlersTests
     {
         _repo
             .GetAllAsync(
-                _application.UserId,
+                ExpensesApplicationFixture.UserId,
                 ExpenseDateRangeResolver.Resolve(
-                    _application.Filter,
-                    DateOnly.FromDateTime(_application.NowUtc.DateTime)
+                    ExpensesApplicationFixture.Filter,
+                    DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime)
                 )
             )
             .Returns([]);
 
         var result = await _get.GetExpensesAsync(
-            _application.UserId,
-            _application.Filter,
-            DateOnly.FromDateTime(_application.NowUtc.DateTime)
+            ExpensesApplicationFixture.UserId,
+            ExpensesApplicationFixture.Filter,
+            DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime)
         );
 
         result.Should().BeEmpty();
@@ -136,17 +138,17 @@ public class ExpensesApplicationHandlersTests
     [Fact]
     public async Task GetExpenseByIdAsync_ExistingGuid_Returns_Response()
     {
-        var expense = _application.NewExpense(_application.UserId);
+        var expense = ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId);
 
         var id = expense.Id;
         var expected = ExpenseMapper.ToDto(expense);
 
-        _repo.GetByIdAsync(_application.UserId, id).Returns(expense);
+        _repo.GetByIdAsync(ExpensesApplicationFixture.UserId, id).Returns(expense);
 
-        var result = await _getById.GetExpenseByIdAsync(_application.UserId, id);
+        var result = await _getById.GetExpenseByIdAsync(ExpensesApplicationFixture.UserId, id);
 
         result.Should().Be(expected);
-        await _repo.Received(1).GetByIdAsync(_application.UserId, id);
+        await _repo.Received(1).GetByIdAsync(ExpensesApplicationFixture.UserId, id);
     }
 
     [Fact]
@@ -154,9 +156,9 @@ public class ExpensesApplicationHandlersTests
     {
         var id = Guid.NewGuid();
 
-        _repo.GetByIdAsync(_application.UserId, id).Returns((Expense?)null);
+        _repo.GetByIdAsync(ExpensesApplicationFixture.UserId, id).Returns((Expense?)null);
 
-        var result = await _getById.GetExpenseByIdAsync(_application.UserId, id);
+        var result = await _getById.GetExpenseByIdAsync(ExpensesApplicationFixture.UserId, id);
 
         result.Should().BeNull();
     }
@@ -166,17 +168,21 @@ public class ExpensesApplicationHandlersTests
     [Fact]
     public async Task UpdateExpenseAsync_NewInformation_ReturnsUpdatedExpense()
     {
-        var expense = _application.NewExpense(_application.UserId);
+        var expense = ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId);
 
-        var dto = _application.NewExpenseRequestDto(
+        var dto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, description, date, time) =>
                 new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
 
-        _repo.GetByIdAsync(_application.UserId, expense.Id).Returns(expense);
+        _repo.GetByIdAsync(ExpensesApplicationFixture.UserId, expense.Id).Returns(expense);
         _repo.UpdateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
 
-        var result = await _update.UpdateExpenseAsync(_application.UserId, expense.Id, dto);
+        var result = await _update.UpdateExpenseAsync(
+            ExpensesApplicationFixture.UserId,
+            expense.Id,
+            dto
+        );
 
         result.Should().BeOfType<ExpenseResponseDto>();
         result.Id.Should().Be(expense.Id);
@@ -193,7 +199,7 @@ public class ExpensesApplicationHandlersTests
         var dummy = Guid.NewGuid();
         var expenseId = Guid.NewGuid();
 
-        var dto = _application.NewExpenseRequestDto(
+        var dto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, description, date, time) =>
                 new UpdateExpenseRequestDto(amount, category, description, date, time)
         );
@@ -213,19 +219,19 @@ public class ExpensesApplicationHandlersTests
     {
         var dummy = Guid.NewGuid();
 
-        _repo.GetByIdAsync(_application.UserId, dummy).Returns((Expense?)null);
+        _repo.GetByIdAsync(ExpensesApplicationFixture.UserId, dummy).Returns((Expense?)null);
 
         var result = await _update.UpdateExpenseAsync(
-            _application.UserId,
+            ExpensesApplicationFixture.UserId,
             dummy,
-            _application.NewExpenseRequestDto(
+            ExpensesApplicationFixture.NewExpenseRequestDto(
                 (amount, category, description, date, time) =>
                     new UpdateExpenseRequestDto(amount, category, description, date, time)
             )
         );
 
         result.Should().BeNull();
-        await _repo.Received(1).GetByIdAsync(_application.UserId, dummy);
+        await _repo.Received(1).GetByIdAsync(ExpensesApplicationFixture.UserId, dummy);
         await _repo.DidNotReceive().UpdateAsync(Arg.Any<Expense>());
     }
 
@@ -234,9 +240,9 @@ public class ExpensesApplicationHandlersTests
     [Fact]
     public async Task DeleteExpenseAsync_ExpenseExists_DeletesExpenseReturnsTrue()
     {
-        var expense = _application.NewExpense(_application.UserId);
+        var expense = ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId);
 
-        var otherExpense = _application.NewExpense(
+        var otherExpense = ExpensesApplicationFixture.NewExpense(
             Guid.NewGuid(),
             2000m,
             ExpenseCategory.Utilities,
@@ -245,29 +251,37 @@ public class ExpensesApplicationHandlersTests
 
         var expenses = new List<Expense> { expense, otherExpense };
 
-        _repo.GetByIdAsync(_application.UserId, expense.Id).Returns(expense);
+        _repo.GetByIdAsync(ExpensesApplicationFixture.UserId, expense.Id).Returns(expense);
         _repo
             .DeleteAsync(expense)
             .Returns(true)
             .AndDoes(info => expenses.Remove(info.Arg<Expense>()));
 
-        var result = await _delete.DeleteExpenseAsync(_application.UserId, expense.Id);
+        var result = await _delete.DeleteExpenseAsync(
+            ExpensesApplicationFixture.UserId,
+            expense.Id
+        );
 
         result.Should().BeTrue();
         expenses.Should().ContainSingle().Which.Amount.Should().Be(2000);
-        await _repo.Received(1).GetByIdAsync(_application.UserId, expense.Id);
+        await _repo.Received(1).GetByIdAsync(ExpensesApplicationFixture.UserId, expense.Id);
         await _repo.Received(1).DeleteAsync(expense);
     }
 
     [Fact]
     public async Task DeleteExpenseAsync_ExpenseNotFound_ReturnsFalse()
     {
-        _repo.GetByIdAsync(_application.UserId, Arg.Any<Guid>()).Returns((Expense?)null);
+        _repo
+            .GetByIdAsync(ExpensesApplicationFixture.UserId, Arg.Any<Guid>())
+            .Returns((Expense?)null);
 
-        var result = await _delete.DeleteExpenseAsync(_application.UserId, Guid.NewGuid());
+        var result = await _delete.DeleteExpenseAsync(
+            ExpensesApplicationFixture.UserId,
+            Guid.NewGuid()
+        );
 
         result.Should().BeFalse();
-        await _repo.Received(1).GetByIdAsync(_application.UserId, Arg.Any<Guid>());
+        await _repo.Received(1).GetByIdAsync(ExpensesApplicationFixture.UserId, Arg.Any<Guid>());
         await _repo.DidNotReceive().DeleteAsync(Arg.Any<Expense>());
     }
 }
