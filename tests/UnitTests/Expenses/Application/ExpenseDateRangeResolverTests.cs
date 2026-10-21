@@ -135,4 +135,19 @@ public class ExpenseDateRangeResolverTests
         range.From.Should().Be(new DateOnly(2025, 12, 1));
         range.To.Should().Be(today);
     }
+
+    [Fact]
+    public void Resolve_Custom_ReturnsExplicitExpenseDateRange()
+    {
+        var from = new DateOnly(2026, 9, 21);
+        var to = new DateOnly(2026, 9, 27);
+
+        var range = ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(ExpenseRangePreset.Custom, from, to),
+            _today
+        );
+
+        range.From.Should().Be(from);
+        range.To.Should().Be(to);
+    }
 }
