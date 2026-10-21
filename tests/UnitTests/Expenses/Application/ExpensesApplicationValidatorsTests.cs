@@ -203,7 +203,7 @@ public class ExpensesApplicationValidatorsTests
     public void ExpenseFilterRequestDtoValidator_CustomWithValidDates_NoErrors()
     {
         var filter = NewFilter(
-            ExpenseRangePreset.Week,
+            ExpenseRangePreset.Custom,
             new DateOnly(2026, 9, 21),
             new DateOnly(2026, 9, 27)
         );
@@ -217,7 +217,7 @@ public class ExpensesApplicationValidatorsTests
     public void ExpenseFilterRequestDtoValidator_CustomWithEqualDates_NoErrors()
     {
         var date = new DateOnly(2026, 9, 21);
-        var filter = NewFilter(ExpenseRangePreset.Week, date, date);
+        var filter = NewFilter(ExpenseRangePreset.Custom, date, date);
 
         var result = _filterRequestDtoValidator.TestValidate(filter);
 
