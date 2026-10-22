@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Filtering;
 using Expenses.Application.Interfaces;
 using Expenses.Application.Mappings;
 
@@ -10,9 +11,14 @@ public class GetExpensesHandler
 
     public GetExpensesHandler(IExpenseRepository rep) => _repo = rep;
 
-    public async Task<IReadOnlyList<ExpenseResponseDto>> GetExpensesAsync(Guid userId)
+    public async Task<IReadOnlyList<ExpenseResponseDto>> GetExpensesAsync(
+        Guid userId,
+        ExpenseFilterRequestDto filter,
+        DateOnly today
+    )
     {
-        var retrieved = await _repo.GetAllAsync(userId);
+        var dateRange = ExpenseDateRangeResolver.Resolve(filter, today);
+        var retrieved = await _repo.GetAllAsync(userId, dateRange);
         return [.. retrieved.Select(ExpenseMapper.ToDto)];
     }
 }

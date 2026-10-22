@@ -15,7 +15,7 @@ public class CreateExpenseHandler
         CreateExpenseRequestDto expenseRequestDto
     )
     {
-        var expense = ExpenseMapper.ToEntity(userId, expenseRequestDto);
+        var expense = ExpenseMapper.ToEntity(userId, expenseRequestDto, DateTimeOffset.UtcNow);
         var persisted = await _rep.CreateAsync(expense);
         return ExpenseMapper.ToDto(persisted);
     }

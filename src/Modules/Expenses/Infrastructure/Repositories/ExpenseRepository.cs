@@ -1,3 +1,4 @@
+using Expenses.Application.Filtering;
 using Expenses.Application.Interfaces;
 using Expenses.Domain.Entities;
 using Expenses.Infrastructure.Data;
@@ -12,11 +13,17 @@ public class ExpenseRepository : IExpenseRepository
     public ExpenseRepository(ExpenseDbContext expenseDbContext) =>
         _expenseDbContext = expenseDbContext;
 
-    public async Task<IReadOnlyList<Expense>> GetAllAsync(Guid userId)
+    public async Task<IReadOnlyList<Expense>> GetAllAsync(Guid userId, ExpenseDateRange dateRange)
     {
-        return await _expenseDbContext
+        var retrieved = _expenseDbContext
             .Expenses.AsNoTracking()
-            .Where(expense => expense.UserId == userId)
+            .Where(expense =>
+                expense.UserId == userId
+                && expense.Date >= dateRange.From
+                && expense.Date <= dateRange.To
+            );
+
+        return await retrieved
             .OrderByDescending(expense => expense.Date)
             .ThenByDescending(expense => expense.Time)
             .ToListAsync();

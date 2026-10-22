@@ -1,3 +1,6 @@
+using Expenses.Application.Dto;
+using Expenses.Application.Enums;
+using Expenses.Application.Filtering;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using Expenses.Infrastructure.Data;
@@ -18,6 +21,8 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
 
     private readonly Guid _userA = Guid.NewGuid();
     private readonly Guid _userB = Guid.NewGuid();
+
+    // Septemper 27, 2026 14:00 UTC
     private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
     public ExpensesInfrastructureTest(ExpensesDatabaseFixture fixture) => _fixture = fixture;
@@ -56,6 +61,18 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         );
     }
 
+    private ExpenseDateRange NewFilter(
+        ExpenseRangePreset range,
+        DateOnly? from = null,
+        DateOnly? to = null
+    )
+    {
+        return ExpenseDateRangeResolver.Resolve(
+            new ExpenseFilterRequestDto(range, from, to),
+            DateOnly.FromDateTime(_nowUtc.DateTime)
+        );
+    }
+
     // ---------- GetAllAsync ----------
 
     [Fact]
@@ -68,7 +85,7 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         );
         await _context.SaveChangesAsync();
 
-        var result = await _repo.GetAllAsync(_userA);
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
 
         result.Should().HaveCount(2);
         result.Should().OnlyContain(expense => expense.UserId == _userA);
@@ -89,7 +106,7 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
         );
         await _context.SaveChangesAsync();
 
-        var result = await _repo.GetAllAsync(_userA);
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Month));
 
         result
             .Select(expense => expense.Description)
@@ -98,9 +115,95 @@ public class ExpensesInfrastructureTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetAllAsync_WeekPreset_ReturnsOnlyExpensesWithinLastWeek()
+    {
+        var today = DateOnly.FromDateTime(_nowUtc.DateTime);
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: today, description: "today"),
+            NewExpense(_userA, date: today.AddDays(-1), description: "yesterday"),
+            NewExpense(_userA, date: today.AddDays(-5), description: "five-days-ago"),
+            NewExpense(_userA, date: today.AddDays(-8), description: "eight-days-ago"),
+            NewExpense(_userA, date: today.AddDays(-30), description: "thirty-days-ago")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("today", "yesterday", "five-days-ago");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_MonthPreset_ReturnsOnlyExpensesWithinCurrentMonth()
+    {
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: new DateOnly(2026, 9, 27), description: "today"),
+            NewExpense(_userA, date: new DateOnly(2026, 9, 15), description: "mid-september"),
+            NewExpense(_userA, date: new DateOnly(2026, 9, 2), description: "early-september"),
+            NewExpense(_userA, date: new DateOnly(2026, 8, 15), description: "mid-august"),
+            NewExpense(_userA, date: new DateOnly(2026, 7, 20), description: "mid-july")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Month));
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("today", "mid-september", "early-september");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_ThreeMonthsPreset_ReturnsOnlyExpensesWithinLastThreeMonths()
+    {
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: new DateOnly(2026, 9, 27), description: "today"),
+            NewExpense(_userA, date: new DateOnly(2026, 8, 15), description: "one-month-ago"),
+            NewExpense(_userA, date: new DateOnly(2026, 7, 5), description: "two-months-ago"),
+            NewExpense(_userA, date: new DateOnly(2026, 6, 1), description: "three-months-ago"),
+            NewExpense(_userA, date: new DateOnly(2026, 1, 1), description: "long-ago")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.ThreeMonths));
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("today", "one-month-ago", "two-months-ago");
+    }
+
+    [Fact]
+    public async Task GetAllAsync_CustomPreset_ReturnsOnlyExpensesWithinExplicitRange()
+    {
+        var from = new DateOnly(2026, 9, 10);
+        var to = new DateOnly(2026, 9, 20);
+        _context.Expenses.AddRange(
+            NewExpense(_userA, date: from.AddDays(-1), description: "before-range"),
+            NewExpense(_userA, date: from, description: "start-of-range"),
+            NewExpense(_userA, date: new DateOnly(2026, 9, 15), description: "inside-range"),
+            NewExpense(_userA, date: to, description: "end-of-range"),
+            NewExpense(_userA, date: to.AddDays(1), description: "after-range")
+        );
+        await _context.SaveChangesAsync();
+
+        var result = await _repo.GetAllAsync(
+            _userA,
+            NewFilter(ExpenseRangePreset.Custom, from, to)
+        );
+
+        result
+            .Select(expense => expense.Description)
+            .Should()
+            .BeEquivalentTo("start-of-range", "inside-range", "end-of-range");
+    }
+
+    [Fact]
     public async Task GetAllAsync_UserHasNoExpense_ReturnsEmptyList()
     {
-        var result = await _repo.GetAllAsync(_userA);
+        var result = await _repo.GetAllAsync(_userA, NewFilter(ExpenseRangePreset.Week));
 
         result.Should().BeEmpty();
     }
