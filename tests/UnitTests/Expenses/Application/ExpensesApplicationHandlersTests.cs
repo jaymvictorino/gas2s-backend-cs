@@ -151,6 +151,32 @@ public class ExpensesApplicationHandlersTests
     }
 
     [Fact]
+    public async Task GetExpensesAsync_CustomPreset_ReturnsExpensesWithinRange()
+    {
+        var today = DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime);
+        var from = new DateOnly(today.Year, today.Month, 10);
+        var to = new DateOnly(today.Year, today.Month, 20);
+        var filter = new ExpenseFilterRequestDto(ExpenseRangePreset.Custom, from, to);
+        var dateRange = new ExpenseDateRange(from, to);
+
+        var expenses = new List<Expense>()
+        {
+            ExpensesApplicationFixture.NewExpense(
+                ExpensesApplicationFixture.UserId,
+                description: "within-range",
+                date: new DateOnly(today.Year, today.Month, 15)
+            ),
+        };
+
+        _repo.GetAllAsync(ExpensesApplicationFixture.UserId, dateRange).Returns(expenses);
+
+        var result = await _get.GetExpensesAsync(ExpensesApplicationFixture.UserId, filter, today);
+
+        result.Should().BeEquivalentTo(expenses.Select(ExpenseMapper.ToDto));
+        await _repo.Received(1).GetAllAsync(ExpensesApplicationFixture.UserId, dateRange);
+    }
+
+    [Fact]
     public async Task GetExpensesAsync_EmptyRepository_Should_Return_EmptyList()
     {
         _repo
