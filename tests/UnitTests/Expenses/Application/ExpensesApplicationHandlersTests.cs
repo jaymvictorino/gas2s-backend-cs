@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Enums;
 using Expenses.Application.Filtering;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
@@ -109,7 +110,45 @@ public class ExpensesApplicationHandlersTests
         result.Should().HaveCount(2).And.BeEquivalentTo(expected.Select(ExpenseMapper.ToDto));
     }
 
-    // TODO: add tests for filtering Week, Month, ThreeMonths, and Custom
+    [Fact]
+    public async Task GetExpensesAsync_WeekPreset_ReturnsExpensesWithinTheWeek()
+    {
+        var today = DateOnly.FromDateTime(ExpensesApplicationFixture.NowUtc.DateTime);
+        var expectedRange = new ExpenseDateRange(today.AddDays(-6), today);
+
+        var expenses = new List<Expense>()
+        {
+            ExpensesApplicationFixture.NewExpense(
+                ExpensesApplicationFixture.UserId,
+                description: "today"
+            ),
+            ExpensesApplicationFixture.NewExpense(
+                ExpensesApplicationFixture.UserId,
+                description: "yesterday",
+                date: today.AddDays(-1)
+            ),
+            ExpensesApplicationFixture.NewExpense(
+                ExpensesApplicationFixture.UserId,
+                description: "last-week",
+                date: today.AddDays(-7)
+            ),
+        };
+
+        var filtered = expenses[..2];
+        var expected = filtered.Select(ExpenseMapper.ToDto);
+
+        _repo.GetAllAsync(ExpensesApplicationFixture.UserId, expectedRange).Returns(filtered);
+
+        var result = await _get.GetExpensesAsync(
+            ExpensesApplicationFixture.UserId,
+            new ExpenseFilterRequestDto(ExpenseRangePreset.Week, null, null),
+            today
+        );
+
+        result.Should().BeEquivalentTo(expected);
+        result.Select(dto => dto.Description).Should().BeEquivalentTo("today", "yesterday");
+        await _repo.Received(1).GetAllAsync(ExpensesApplicationFixture.UserId, expectedRange);
+    }
 
     [Fact]
     public async Task GetExpensesAsync_EmptyRepository_Should_Return_EmptyList()
