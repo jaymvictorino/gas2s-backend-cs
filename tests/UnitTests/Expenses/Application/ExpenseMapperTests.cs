@@ -12,7 +12,7 @@ public class ExpenseMapperTests
     [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
-var dto = ExpensesApplicationFixture.NewExpenseRequestDto(
+        var dto = ExpensesApplicationFixture.NewExpenseRequestDto(
             (amount, category, description, date, time) =>
                 new CreateExpenseRequestDto(amount, category, description, date, time)
         );
@@ -24,7 +24,7 @@ var dto = ExpensesApplicationFixture.NewExpenseRequestDto(
 
         expense.Should().BeOfType<Expense>();
         expense.UserId.Should().Be(ExpensesApplicationFixture.UserId);
-expense.Amount.Should().Be(dto.Amount);
+        expense.Amount.Should().Be(dto.Amount);
         expense.Category.Should().Be(dto.Category);
         expense.Description.Should().Be(dto.Description);
         expense.Date.Should().Be(dto.Date);
@@ -36,11 +36,16 @@ expense.Amount.Should().Be(dto.Amount);
     [Fact]
     public void ToDto_ConvertExpense_ReturnsExpenseResponseDto()
     {
-        var expResDto = ExpenseMapper.ToDto(
-            ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId)
-        );
+        var expense = ExpensesApplicationFixture.NewExpense(ExpensesApplicationFixture.UserId);
+
+        var expResDto = ExpenseMapper.ToDto(expense);
 
         expResDto.Should().BeOfType<ExpenseResponseDto>();
-        expResDto.Id.Should().NotBeEmpty();
+        expResDto.Id.Should().Be(expense.Id);
+        expResDto.Amount.Should().Be(expense.Amount);
+        expResDto.Category.Should().Be(expense.Category);
+        expResDto.Description.Should().Be(expense.Description);
+        expResDto.Date.Should().Be(expense.Date);
+        expResDto.Time.Should().Be(expense.Time);
     }
 }
