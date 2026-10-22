@@ -12,17 +12,23 @@ public class ExpenseMapperTests
     [Fact]
     public void ToEntity_ConvertCreateExpenseRequestDto_ReturnsExpense()
     {
+var dto = ExpensesApplicationFixture.NewExpenseRequestDto(
+            (amount, category, description, date, time) =>
+                new CreateExpenseRequestDto(amount, category, description, date, time)
+        );
         var expense = ExpenseMapper.ToEntity(
             ExpensesApplicationFixture.UserId,
-            ExpensesApplicationFixture.NewExpenseRequestDto(
-                (amount, category, description, date, time) =>
-                    new CreateExpenseRequestDto(amount, category, description, date, time)
-            ),
+            dto,
             ExpensesApplicationFixture.NowUtc
         );
 
         expense.Should().BeOfType<Expense>();
         expense.UserId.Should().Be(ExpensesApplicationFixture.UserId);
+expense.Amount.Should().Be(dto.Amount);
+        expense.Category.Should().Be(dto.Category);
+        expense.Description.Should().Be(dto.Description);
+        expense.Date.Should().Be(dto.Date);
+        expense.Time.Should().Be(dto.Time);
     }
 
     // ---------- ExpenseMapper.ToDto ----------
