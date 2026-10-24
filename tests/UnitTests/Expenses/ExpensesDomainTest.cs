@@ -156,25 +156,16 @@ public class ExpensesDomainTest
     {
         var expense = Expense.Create(
             _userId,
-            127.00m,
-            ExpenseCategory.Clothing,
-            "Gift",
-            new DateOnly(2026, 9, 22),
-            new TimeOnly(14, 2, 0),
-            _fakeTime.GetUtcNow()
+            _amount,
+            _category,
+            _description,
+            _date,
+            _time,
+            _nowUtc
         );
 
-        _fakeTime.Advance(TimeSpan.FromHours(1));
-
         var updExp = () =>
-            expense.Update(
-                amount,
-                ExpenseCategory.Clothing,
-                "Gift",
-                new DateOnly(2026, 9, 22),
-                new TimeOnly(14, 2, 0),
-                _fakeTime.GetUtcNow()
-            );
+            expense.Update(amount, _category, _description, _date, _time, _nowUtc.AddHours(1));
 
         updExp.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("amount");
     }
