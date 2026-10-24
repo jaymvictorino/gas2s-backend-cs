@@ -126,33 +126,23 @@ public class ExpensesDomainTest
     [Fact]
     public void Update_ExistingId_UpdateExpense()
     {
-        var expense = Expense.Create(
-            _userId,
-            _amount,
-            _category,
-            _description,
-            _date,
-            _time,
-            _nowUtc
-        );
-
         const decimal updAmt = 150.00m;
         const ExpenseCategory updCat = ExpenseCategory.Leisure;
         const string updDesc = "New gift for Liji";
 
         var updatedAt = _nowUtc.AddHours(1);
 
-        expense.Update(updAmt, updCat, updDesc, _date, _time, updatedAt);
+        _expense.Update(updAmt, updCat, updDesc, _date, _time, updatedAt);
 
-        expense.Id.Should().NotBe(Guid.Empty);
-        expense.UserId.Should().Be(_userId);
-        expense.Amount.Should().Be(updAmt);
-        expense.Category.Should().Be(updCat);
-        expense.Description.Should().Be(updDesc);
-        expense.Date.Should().Be(_date);
-        expense.Time.Should().Be(_time);
-        expense.CreatedAtUtc.Should().Be(_nowUtc);
-        expense.UpdatedAtUtc.Should().Be(updatedAt);
+        _expense.Id.Should().NotBe(Guid.Empty);
+        _expense.UserId.Should().Be(_userId);
+        _expense.Amount.Should().Be(updAmt);
+        _expense.Category.Should().Be(updCat);
+        _expense.Description.Should().Be(updDesc);
+        _expense.Date.Should().Be(_date);
+        _expense.Time.Should().Be(_time);
+        _expense.CreatedAtUtc.Should().Be(_nowUtc);
+        _expense.UpdatedAtUtc.Should().Be(updatedAt);
     }
 
     [Theory]
@@ -161,18 +151,8 @@ public class ExpensesDomainTest
     [InlineData(-0.1)]
     public void Update_ZeroOrNegativeAmount_ThrowException(decimal amount)
     {
-        var expense = Expense.Create(
-            _userId,
-            _amount,
-            _category,
-            _description,
-            _date,
-            _time,
-            _nowUtc
-        );
-
         var updExp = () =>
-            expense.Update(amount, _category, _description, _date, _time, _nowUtc.AddHours(1));
+            _expense.Update(amount, _category, _description, _date, _time, _nowUtc.AddHours(1));
 
         updExp.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("amount");
     }
