@@ -67,15 +67,16 @@ public class ExpensesDomainTest
     [Fact]
     public void Create_InvalidCategory_ThrowException()
     {
-        var userId = Guid.NewGuid();
-        const decimal amt = 127.00m;
-        const string desc = "Gift for Liji";
-        var date = new DateOnly(2026, 9, 22);
-        var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime.GetUtcNow();
-
         var expense = () =>
-            Expense.Create(userId, amt, (ExpenseCategory)999, desc, date, time, createdAt);
+            Expense.Create(
+                _userId,
+                _amount,
+                (ExpenseCategory)999,
+                _description,
+                _date,
+                _time,
+                _nowUtc
+            );
 
         expense.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("category");
     }
