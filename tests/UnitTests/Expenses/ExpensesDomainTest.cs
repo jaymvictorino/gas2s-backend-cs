@@ -23,25 +23,25 @@ public class ExpensesDomainTest
     [Fact]
     public void Create_Should_Store_Assigned_Values()
     {
-        var userId = Guid.NewGuid();
-        const decimal amt = 127.00m;
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        const string desc = "Gift for Liji";
-        var date = new DateOnly(2026, 9, 22);
-        var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime.GetUtcNow();
-
-        var expense = Expense.Create(userId, amt, cat, desc, date, time, createdAt);
+        var expense = Expense.Create(
+            _userId,
+            _amount,
+            _category,
+            _description,
+            _date,
+            _time,
+            _nowUtc
+        );
 
         expense.Id.Should().NotBe(Guid.Empty);
-        expense.UserId.Should().Be(userId);
-        expense.Amount.Should().Be(amt);
-        expense.Category.Should().Be(cat);
-        expense.Description.Should().Be(desc);
-        expense.Date.Should().Be(date);
-        expense.Time.Should().Be(time);
-        expense.CreatedAtUtc.Should().Be(createdAt);
-        expense.UpdatedAtUtc.Should().Be(createdAt);
+        expense.UserId.Should().Be(_userId);
+        expense.Amount.Should().Be(_amount);
+        expense.Category.Should().Be(_category);
+        expense.Description.Should().Be(_description);
+        expense.Date.Should().Be(_date);
+        expense.Time.Should().Be(_time);
+        expense.CreatedAtUtc.Should().Be(_nowUtc);
+        expense.UpdatedAtUtc.Should().Be(_nowUtc);
     }
 
     [Fact]
