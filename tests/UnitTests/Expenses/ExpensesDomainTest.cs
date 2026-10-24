@@ -10,8 +10,15 @@ public class ExpensesDomainTest
     private readonly FakeTimeProvider _fakeTime = new(
         new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
     );
+    private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
     private readonly Guid _userId = Guid.NewGuid();
+
+    private decimal _amount = 100m;
+    private ExpenseCategory _category = ExpenseCategory.Clothing;
+    private string _description = "Gift for Liji";
+    private DateOnly _date = new(2026, 9, 22);
+    private TimeOnly _time = new(2, 11, 0);
 
     [Fact]
     public void Create_Should_Store_Assigned_Values()
