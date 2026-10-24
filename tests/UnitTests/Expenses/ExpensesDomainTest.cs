@@ -47,15 +47,8 @@ public class ExpensesDomainTest
     [Fact]
     public void Create_EmptyUserId_Throw()
     {
-        var userId = Guid.Empty;
-        const decimal amt = 127.00m;
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        const string desc = "Gift for Liji";
-        var date = new DateOnly(2026, 9, 22);
-        var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime.GetUtcNow();
-
-        var expense = () => Expense.Create(userId, amt, cat, desc, date, time, createdAt);
+        var expense = () =>
+            Expense.Create(Guid.Empty, _amount, _category, _description, _date, _time, _nowUtc);
 
         expense.Should().Throw<ArgumentException>().WithParameterName("userId");
     }
