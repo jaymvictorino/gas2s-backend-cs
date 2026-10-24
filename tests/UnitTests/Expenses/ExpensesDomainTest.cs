@@ -20,12 +20,8 @@ public class ExpensesDomainTest
     private readonly DateOnly _date = new(2026, 9, 22);
     private readonly TimeOnly _time = new(2, 11, 0);
 
-    private readonly Expense _expense;
-
-    public ExpensesDomainTest()
-    {
-        _expense = Expense.Create(_userId, _amount, _category, _description, _date, _time, _nowUtc);
-    }
+    private Expense Expense =>
+        Expense.Create(_userId, _amount, _category, _description, _date, _time, _nowUtc);
 
     [Fact]
     public void Create_Should_Store_Assigned_Values()
@@ -126,23 +122,25 @@ public class ExpensesDomainTest
     [Fact]
     public void Update_ExistingId_UpdateExpense()
     {
+        var expense = Expense;
+
         const decimal updAmt = 150.00m;
         const ExpenseCategory updCat = ExpenseCategory.Leisure;
         const string updDesc = "New gift for Liji";
 
         var updatedAt = _nowUtc.AddHours(1);
 
-        _expense.Update(updAmt, updCat, updDesc, _date, _time, updatedAt);
+        expense.Update(updAmt, updCat, updDesc, _date, _time, updatedAt);
 
-        _expense.Id.Should().NotBe(Guid.Empty);
-        _expense.UserId.Should().Be(_userId);
-        _expense.Amount.Should().Be(updAmt);
-        _expense.Category.Should().Be(updCat);
-        _expense.Description.Should().Be(updDesc);
-        _expense.Date.Should().Be(_date);
-        _expense.Time.Should().Be(_time);
-        _expense.CreatedAtUtc.Should().Be(_nowUtc);
-        _expense.UpdatedAtUtc.Should().Be(updatedAt);
+        expense.Id.Should().NotBe(Guid.Empty);
+        expense.UserId.Should().Be(_userId);
+        expense.Amount.Should().Be(updAmt);
+        expense.Category.Should().Be(updCat);
+        expense.Description.Should().Be(updDesc);
+        expense.Date.Should().Be(_date);
+        expense.Time.Should().Be(_time);
+        expense.CreatedAtUtc.Should().Be(_nowUtc);
+        expense.UpdatedAtUtc.Should().Be(updatedAt);
     }
 
     [Theory]
@@ -152,7 +150,7 @@ public class ExpensesDomainTest
     public void Update_ZeroOrNegativeAmount_ThrowException(decimal amount)
     {
         var updExp = () =>
-            _expense.Update(amount, _category, _description, _date, _time, _nowUtc.AddHours(1));
+            Expense.Update(amount, _category, _description, _date, _time, _nowUtc.AddHours(1));
 
         updExp.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("amount");
     }
@@ -161,7 +159,7 @@ public class ExpensesDomainTest
     public void Update_InvalidCategory_ThrowException()
     {
         var updExp = () =>
-            _expense.Update(
+            Expense.Update(
                 _amount,
                 (ExpenseCategory)999,
                 _description,
@@ -177,7 +175,7 @@ public class ExpensesDomainTest
     public void Update_VeryLongDescription_ThrowException()
     {
         var updExp = () =>
-            _expense.Update(
+            Expense.Update(
                 _amount,
                 _category,
                 new string('x', 501),
@@ -192,48 +190,18 @@ public class ExpensesDomainTest
     [Fact]
     public void Update_TrimDescription_NullDescription()
     {
-        var expense = Expense.Create(
-            _userId,
-            127.00m,
-            ExpenseCategory.Clothing,
-            "Gift",
-            new DateOnly(2026, 9, 22),
-            new TimeOnly(14, 2, 0),
-            _fakeTime.GetUtcNow()
-        );
+        var expense = Expense;
 
-        var exp2 = Expense.Create(
-            _userId,
-            127.00m,
-            ExpenseCategory.Clothing,
-            "Gift",
-            new DateOnly(2026, 9, 22),
-            new TimeOnly(14, 2, 0),
-            _fakeTime.GetUtcNow()
-        );
+        var expense2 = Expense;
 
         _fakeTime.Advance(TimeSpan.FromHours(1));
 
-        expense.Update(
-            127.00m,
-            ExpenseCategory.Clothing,
-            "   Gift    ",
-            new DateOnly(2026, 9, 22),
-            new TimeOnly(14, 2, 0),
-            _fakeTime.GetUtcNow()
-        );
+        expense.Update(_amount, _category, "   Gift    ", _date, _time, _nowUtc);
 
-        exp2.Update(
-            127.00m,
-            ExpenseCategory.Clothing,
-            "       ",
-            new DateOnly(2026, 9, 22),
-            new TimeOnly(14, 2, 0),
-            _fakeTime.GetUtcNow()
-        );
+        expense2.Update(_amount, _category, "       ", _date, _time, _nowUtc);
 
         expense.Description.Should().Be("Gift");
-        exp2.Description.Should().BeNull();
+        expense2.Description.Should().BeNull();
     }
 
     [Fact]
