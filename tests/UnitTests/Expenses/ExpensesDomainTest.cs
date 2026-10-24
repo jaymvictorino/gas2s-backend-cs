@@ -57,17 +57,10 @@ public class ExpensesDomainTest
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(-0.1)]
-    public void Create_ZeroOrNegativeAmount_ThrowException(decimal amt)
+    public void Create_ZeroOrNegativeAmount_ThrowException(decimal amount)
     {
-        var userId = Guid.NewGuid();
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        const string desc = "Gift for Liji";
-        var date = new DateOnly(2026, 9, 22);
-        var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime.GetUtcNow();
-
-        var expense = () => Expense.Create(userId, amt, cat, desc, date, time, createdAt);
-
+        var expense = () =>
+            Expense.Create(_userId, amount, _category, _description, _date, _time, _nowUtc);
         expense.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("amount");
     }
 
