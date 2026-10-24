@@ -14,11 +14,18 @@ public class ExpensesDomainTest
 
     private readonly Guid _userId = Guid.NewGuid();
 
-    private decimal _amount = 100m;
-    private ExpenseCategory _category = ExpenseCategory.Clothing;
-    private string _description = "Gift for Liji";
-    private DateOnly _date = new(2026, 9, 22);
-    private TimeOnly _time = new(2, 11, 0);
+    private readonly decimal _amount = 100m;
+    private readonly ExpenseCategory _category = ExpenseCategory.Clothing;
+    private readonly string _description = "test";
+    private readonly DateOnly _date = new(2026, 9, 22);
+    private readonly TimeOnly _time = new(2, 11, 0);
+
+    private readonly Expense _expense;
+
+    public ExpensesDomainTest()
+    {
+        _expense = Expense.Create(_userId, _amount, _category, _description, _date, _time, _nowUtc);
+    }
 
     [Fact]
     public void Create_Should_Store_Assigned_Values()
@@ -173,18 +180,8 @@ public class ExpensesDomainTest
     [Fact]
     public void Update_InvalidCategory_ThrowException()
     {
-        var expense = Expense.Create(
-            _userId,
-            _amount,
-            _category,
-            _description,
-            _date,
-            _time,
-            _nowUtc
-        );
-
         var updExp = () =>
-            expense.Update(
+            _expense.Update(
                 _amount,
                 (ExpenseCategory)999,
                 _description,
@@ -199,18 +196,8 @@ public class ExpensesDomainTest
     [Fact]
     public void Update_VeryLongDescription_ThrowException()
     {
-        var expense = Expense.Create(
-            _userId,
-            _amount,
-            _category,
-            _description,
-            _date,
-            _time,
-            _nowUtc
-        );
-
         var updExp = () =>
-            expense.Update(
+            _expense.Update(
                 _amount,
                 _category,
                 new string('x', 501),
