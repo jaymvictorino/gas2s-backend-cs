@@ -119,32 +119,32 @@ public class ExpensesDomainTest
     [Fact]
     public void Update_ExistingId_UpdateExpense()
     {
-        var userId = Guid.NewGuid();
-        const decimal amt = 127.00m;
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        const string desc = "Gift for Liji";
-        var date = new DateOnly(2026, 9, 22);
-        var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime.GetUtcNow();
-
-        var expense = Expense.Create(userId, amt, cat, desc, date, time, createdAt);
+        var expense = Expense.Create(
+            _userId,
+            _amount,
+            _category,
+            _description,
+            _date,
+            _time,
+            _nowUtc
+        );
 
         const decimal updAmt = 150.00m;
         const ExpenseCategory updCat = ExpenseCategory.Leisure;
         const string updDesc = "New gift for Liji";
-        _fakeTime.Advance(TimeSpan.FromHours(1));
-        var updatedAt = _fakeTime.GetUtcNow();
 
-        expense.Update(updAmt, updCat, updDesc, date, time, updatedAt);
+        var updatedAt = _nowUtc.AddHours(1);
+
+        expense.Update(updAmt, updCat, updDesc, _date, _time, updatedAt);
 
         expense.Id.Should().NotBe(Guid.Empty);
-        expense.UserId.Should().Be(userId);
+        expense.UserId.Should().Be(_userId);
         expense.Amount.Should().Be(updAmt);
         expense.Category.Should().Be(updCat);
         expense.Description.Should().Be(updDesc);
-        expense.Date.Should().Be(date);
-        expense.Time.Should().Be(time);
-        expense.CreatedAtUtc.Should().Be(createdAt);
+        expense.Date.Should().Be(_date);
+        expense.Time.Should().Be(_time);
+        expense.CreatedAtUtc.Should().Be(_nowUtc);
         expense.UpdatedAtUtc.Should().Be(updatedAt);
     }
 
