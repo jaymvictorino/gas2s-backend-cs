@@ -101,15 +101,16 @@ public class ExpensesDomainTest
     [Fact]
     public void Create_TrimDescription_NullDescription()
     {
-        var userId = Guid.NewGuid();
-        const decimal amt = 127.00m;
-        const ExpenseCategory cat = ExpenseCategory.Clothing;
-        var date = new DateOnly(2026, 9, 22);
-        var time = new TimeOnly(2, 11, 0);
-        var createdAt = _fakeTime.GetUtcNow();
-
-        var blank = Expense.Create(userId, amt, cat, "     ", date, time, createdAt);
-        var withSpaces = Expense.Create(userId, amt, cat, "     ewan    ", date, time, createdAt);
+        var blank = Expense.Create(_userId, _amount, _category, "     ", _date, _time, _nowUtc);
+        var withSpaces = Expense.Create(
+            _userId,
+            _amount,
+            _category,
+            "     ewan    ",
+            _date,
+            _time,
+            _nowUtc
+        );
 
         blank.Description.Should().BeNull();
         withSpaces.Description.Should().Be("ewan");
