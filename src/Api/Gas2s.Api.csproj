@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -10,4 +9,8 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Expenses\Application\Expenses.Application.csproj" />
+    <ProjectReference Include="..\Modules\Expenses\Infrastructure\Expenses.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>
