@@ -29,6 +29,8 @@ public class ExpenseMapperTests
         expense.Description.Should().Be(dto.Description);
         expense.Date.Should().Be(dto.Date);
         expense.Time.Should().Be(dto.Time);
+        expense.CreatedAtUtc.Should().Be(ExpensesApplicationFixture.NowUtc);
+        expense.UpdatedAtUtc.Should().Be(ExpensesApplicationFixture.NowUtc);
     }
 
     // ---------- ExpenseMapper.ToDto ----------
