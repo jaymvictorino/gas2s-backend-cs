@@ -1,15 +1,11 @@
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
 using FluentAssertions;
-using Microsoft.Extensions.Time.Testing;
 
 namespace Gas2s.UnitTests.Expenses;
 
 public class ExpensesDomainTest
 {
-    private readonly FakeTimeProvider _fakeTime = new(
-        new DateTimeOffset(2026, 9, 27, 14, 0, 0, TimeSpan.Zero)
-    );
     private readonly DateTimeOffset _nowUtc = new(2026, 9, 27, 14, 0, 0, TimeSpan.Zero);
 
     private readonly Guid _userId = Guid.NewGuid();
@@ -194,11 +190,11 @@ public class ExpensesDomainTest
 
         var expense2 = Expense;
 
-        _fakeTime.Advance(TimeSpan.FromHours(1));
+        var updatedTime = _nowUtc.AddHours(1);
 
-        expense.Update(_amount, _category, "   Gift    ", _date, _time, _nowUtc);
+        expense.Update(_amount, _category, "   Gift    ", _date, _time, updatedTime);
 
-        expense2.Update(_amount, _category, "       ", _date, _time, _nowUtc);
+        expense2.Update(_amount, _category, "       ", _date, _time, updatedTime);
 
         expense.Description.Should().Be("Gift");
         expense2.Description.Should().BeNull();
