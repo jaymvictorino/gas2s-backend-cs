@@ -12,5 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Modules\Expenses\Application\Expenses.Application.csproj" />
     <ProjectReference Include="..\Modules\Expenses\Infrastructure\Expenses.Infrastructure.csproj" />
+    <ProjectReference Include="..\Shared\SharedKernel\Gas2s.SharedKernel.csproj" />
   </ItemGroup>
 </Project>
