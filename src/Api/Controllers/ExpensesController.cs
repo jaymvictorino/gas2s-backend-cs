@@ -63,6 +63,9 @@ public class ExpensesController : ControllerBase
         [FromQuery] DateOnly? to = null
     )
     {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
         if (!ExpenseRangeParser.TryParse(filter, out var range))
         {
             ModelState.AddModelError(
@@ -81,7 +84,7 @@ public class ExpensesController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var expenses = await _get.GetExpensesAsync(Guid.NewGuid(), filterDto, Today);
+        var expenses = await _get.GetExpensesAsync(userId, filterDto, Today);
 
         return Ok(expenses);
     }
