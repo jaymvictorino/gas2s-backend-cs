@@ -17,17 +17,20 @@ public class ExpensesController : ControllerBase
     private static DateOnly Today => DateOnly.FromDateTime(DateTimeOffset.UtcNow.DateTime);
 
     private readonly GetExpensesHandler _get;
+    private readonly GetExpenseByIdHandler _getById;
 
     private readonly ExpenseFilterRequestDtoValidator _filterValidator;
 
     public ExpensesController(
         ICurrentUser user,
         GetExpensesHandler get,
+        GetExpenseByIdHandler getById,
         ExpenseFilterRequestDtoValidator filterValidator
     )
     {
         _user = user;
         _get = get;
+        _getById = getById;
         _filterValidator = filterValidator;
     }
 
@@ -81,5 +84,16 @@ public class ExpensesController : ControllerBase
         var expenses = await _get.GetExpensesAsync(Guid.NewGuid(), filterDto, Today);
 
         return Ok(expenses);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ExpenseResponseDto>> GetExpenseById(Guid id)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var expense = await _getById.GetExpenseByIdAsync(userId, id);
+
+        return expense is null ? NotFound() : Ok(expense);
     }
 }
