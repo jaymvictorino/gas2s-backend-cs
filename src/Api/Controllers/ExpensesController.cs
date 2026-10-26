@@ -3,6 +3,7 @@ using Expenses.Application.Handlers;
 using Expenses.Application.Validators;
 using FluentValidation.Results;
 using Gas2s.Api.Common;
+using Gas2s.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gas2s.Api.Controllers;
@@ -11,6 +12,8 @@ namespace Gas2s.Api.Controllers;
 [Route("/api/expenses")]
 public class ExpensesController : ControllerBase
 {
+    private readonly ICurrentUser _user;
+
     private static DateOnly Today => DateOnly.FromDateTime(DateTimeOffset.UtcNow.DateTime);
 
     private readonly GetExpensesHandler _get;
@@ -18,12 +21,27 @@ public class ExpensesController : ControllerBase
     private readonly ExpenseFilterRequestDtoValidator _filterValidator;
 
     public ExpensesController(
+        ICurrentUser user,
         GetExpensesHandler get,
         ExpenseFilterRequestDtoValidator filterValidator
     )
     {
+        _user = user;
         _get = get;
         _filterValidator = filterValidator;
+    }
+
+    // UserId Helper
+    private bool TryGetUserId(out Guid userId)
+    {
+        if (_user.UserId != null)
+        {
+            userId = _user.UserId.Value;
+            return true;
+        }
+
+        userId = Guid.Empty;
+        return false;
     }
 
     // ModelState.AddModelError helper for validation errors
