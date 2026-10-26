@@ -18,19 +18,25 @@ public class ExpensesController : ControllerBase
 
     private readonly GetExpensesHandler _get;
     private readonly GetExpenseByIdHandler _getById;
+    private readonly CreateExpenseHandler _create;
 
+    private CreateExpenseRequestDtoValidator _createValidator;
     private readonly ExpenseFilterRequestDtoValidator _filterValidator;
 
     public ExpensesController(
         ICurrentUser user,
         GetExpensesHandler get,
         GetExpenseByIdHandler getById,
+        CreateExpenseHandler create,
+        CreateExpenseRequestDtoValidator createValidator,
         ExpenseFilterRequestDtoValidator filterValidator
     )
     {
         _user = user;
         _get = get;
         _getById = getById;
+        _create = create;
+        _createValidator = createValidator;
         _filterValidator = filterValidator;
     }
 
@@ -98,5 +104,26 @@ public class ExpensesController : ControllerBase
         var expense = await _getById.GetExpenseByIdAsync(userId, id);
 
         return expense is null ? NotFound() : Ok(expense);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(ExpenseResponseDto), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateExpense(
+        [FromBody] CreateExpenseRequestDto expenseRequestDto
+    )
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var validation = await _createValidator.ValidateAsync(expenseRequestDto);
+        if (!validation.IsValid)
+        {
+            AddErrors(validation);
+            return ValidationProblem(ModelState);
+        }
+
+        var expense = await _create.CreateExpenseAsync(userId, expenseRequestDto);
+
+        return CreatedAtAction(nameof(GetExpenseById), new { id = Guid.NewGuid() }, expense);
     }
 }
