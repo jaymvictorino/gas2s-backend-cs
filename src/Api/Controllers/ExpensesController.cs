@@ -105,6 +105,8 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(ExpenseResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ExpenseResponseDto>> GetExpenseById(Guid id)
     {
         if (!TryGetUserId(out var userId))
