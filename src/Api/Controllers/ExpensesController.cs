@@ -19,25 +19,31 @@ public class ExpensesController : ControllerBase
     private readonly GetExpensesHandler _get;
     private readonly GetExpenseByIdHandler _getById;
     private readonly CreateExpenseHandler _create;
+private readonly UpdateExpenseHandler _update;
 
-    private CreateExpenseRequestDtoValidator _createValidator;
+    private readonly CreateExpenseRequestDtoValidator _createValidator;
     private readonly ExpenseFilterRequestDtoValidator _filterValidator;
+private readonly UpdateExpenseRequestDtoValidator _updateValidator;
 
     public ExpensesController(
         ICurrentUser user,
         GetExpensesHandler get,
         GetExpenseByIdHandler getById,
         CreateExpenseHandler create,
+UpdateExpenseHandler update,
         CreateExpenseRequestDtoValidator createValidator,
-        ExpenseFilterRequestDtoValidator filterValidator
+        ExpenseFilterRequestDtoValidator filterValidator,
+        UpdateExpenseRequestDtoValidator updateValidator
     )
     {
         _user = user;
         _get = get;
         _getById = getById;
         _create = create;
+_update = update;
         _createValidator = createValidator;
         _filterValidator = filterValidator;
+_updateValidator = updateValidator;
     }
 
     // UserId Helper
@@ -125,5 +131,26 @@ public class ExpensesController : ControllerBase
         var expense = await _create.CreateExpenseAsync(userId, expenseRequestDto);
 
         return CreatedAtAction(nameof(GetExpenseById), new { id = Guid.NewGuid() }, expense);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateExpense(
+        Guid id,
+        [FromBody] UpdateExpenseRequestDto updateDto
+    )
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        var validation = await _updateValidator.ValidateAsync(updateDto);
+        if (!validation.IsValid)
+        {
+            AddErrors(validation);
+            return ValidationProblem(ModelState);
+        }
+
+        var updated = await _update.UpdateExpenseAsync(userId, id, updateDto);
+
+        return updated is null ? NotFound() : Ok(updated);
     }
 }
