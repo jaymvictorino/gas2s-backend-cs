@@ -19,18 +19,20 @@ public class ExpensesController : ControllerBase
     private readonly GetExpensesHandler _get;
     private readonly GetExpenseByIdHandler _getById;
     private readonly CreateExpenseHandler _create;
-private readonly UpdateExpenseHandler _update;
+    private readonly UpdateExpenseHandler _update;
+    private readonly DeleteExpenseHandler _delete;
 
     private readonly CreateExpenseRequestDtoValidator _createValidator;
     private readonly ExpenseFilterRequestDtoValidator _filterValidator;
-private readonly UpdateExpenseRequestDtoValidator _updateValidator;
+    private readonly UpdateExpenseRequestDtoValidator _updateValidator;
 
     public ExpensesController(
         ICurrentUser user,
         GetExpensesHandler get,
         GetExpenseByIdHandler getById,
         CreateExpenseHandler create,
-UpdateExpenseHandler update,
+        UpdateExpenseHandler update,
+        DeleteExpenseHandler delete,
         CreateExpenseRequestDtoValidator createValidator,
         ExpenseFilterRequestDtoValidator filterValidator,
         UpdateExpenseRequestDtoValidator updateValidator
@@ -40,10 +42,11 @@ UpdateExpenseHandler update,
         _get = get;
         _getById = getById;
         _create = create;
-_update = update;
+        _update = update;
+        _delete = delete;
         _createValidator = createValidator;
         _filterValidator = filterValidator;
-_updateValidator = updateValidator;
+        _updateValidator = updateValidator;
     }
 
     // UserId Helper
@@ -152,5 +155,15 @@ _updateValidator = updateValidator;
         var updated = await _update.UpdateExpenseAsync(userId, id, updateDto);
 
         return updated is null ? NotFound() : Ok(updated);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteExpense(Guid id)
+    {
+        if (!TryGetUserId(out var userId))
+            return Unauthorized();
+
+        return await _delete.DeleteExpenseAsync(userId, id) ? NoContent() : NotFound();
     }
 }
