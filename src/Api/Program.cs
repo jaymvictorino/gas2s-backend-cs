@@ -1,12 +1,17 @@
 using Expenses.Application;
+using Expenses.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 builder.Services.AddExpensesApplication();
+
+builder.Services.AddExpensesInfrastructure(
+    builder.Configuration.GetConnectionString("Gas2sDb")
+        ?? throw new InvalidOperationException("ConnectionStrings:Gas2sDb not configured.")
+);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
