@@ -1,13 +1,19 @@
 using Expenses.Application;
 using Expenses.Infrastructure;
+using Gas2s.Api.Common;
+using Gas2s.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddExpensesApplication();
+// Current user
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, DevCurrentUser>();
 
+// Expenses modules
+builder.Services.AddExpensesApplication();
 builder.Services.AddExpensesInfrastructure(
     builder.Configuration.GetConnectionString("Gas2sDb")
         ?? throw new InvalidOperationException("ConnectionStrings:Gas2sDb not configured.")
