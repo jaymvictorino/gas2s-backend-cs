@@ -135,7 +135,7 @@ public class ExpensesController : ControllerBase
 
         var expense = await _create.CreateExpenseAsync(userId, expenseRequestDto);
 
-        return CreatedAtAction(nameof(GetExpenseById), new { id = Guid.NewGuid() }, expense);
+        return CreatedAtAction(nameof(GetExpenseById), new { id = expense.Id }, expense);
     }
 
     [HttpPut("{id:guid}")]
