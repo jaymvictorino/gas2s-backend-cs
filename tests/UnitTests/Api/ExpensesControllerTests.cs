@@ -7,7 +7,9 @@ using Expenses.Domain.Enums;
 using FluentAssertions;
 using Gas2s.Api.Controllers;
 using Gas2s.SharedKernel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 namespace Gas2s.UnitTests.Api;
@@ -35,6 +37,16 @@ public class ExpensesControllerTests
             new ExpenseFilterRequestDtoValidator(),
             new UpdateExpenseRequestDtoValidator()
         );
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                RequestServices = new ServiceCollection()
+                    .AddControllers()
+                    .Services.BuildServiceProvider(),
+            },
+        };
 
         _user.UserId.Returns(UserId);
     }
@@ -95,5 +107,24 @@ public class ExpensesControllerTests
         };
 
         result.Should().BeOfType<UnauthorizedResult>();
+    }
+
+    // ------------------------------------------------------------------
+    // GET /api/expenses
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetExpenses_InvalidFilter_Returns400WithFilterError()
+    {
+        var result = await _controller.GetExpenses("ewan");
+
+        var error = result.Result.Should().BeOfType<BadRequestObjectResult>().Subject;
+
+        error.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        error
+            .Value.Should()
+            .BeOfType<ValidationProblemDetails>()
+            .Which.Errors.Keys.Should()
+            .Contain("filter");
     }
 }
