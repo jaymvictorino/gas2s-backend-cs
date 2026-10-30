@@ -4,8 +4,10 @@ using Expenses.Application.Interfaces;
 using Expenses.Application.Validators;
 using Expenses.Domain.Entities;
 using Expenses.Domain.Enums;
+using FluentAssertions;
 using Gas2s.Api.Controllers;
 using Gas2s.SharedKernel;
+using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 
 namespace Gas2s.UnitTests.Api;
@@ -63,4 +65,35 @@ public class ExpensesControllerTests
     // UpdateExpenseRequestDto factory method
     private static UpdateExpenseRequestDto ValidUpdateRequest() =>
         new(100m, ExpenseCategory.Groceries, "test", Today, new TimeOnly(12, 0));
+
+    // ------------------------------------------------------------------
+    // Authentication — every action must reject an unauthenticated request
+    // ------------------------------------------------------------------
+
+    [Theory]
+    [InlineData("get")]
+    [InlineData("getById")]
+    [InlineData("create")]
+    [InlineData("update")]
+    [InlineData("delete")]
+    public async Task Action_WhenUserNotAuthenticated_ReturnsUnauthorized(string action)
+    {
+        _user.UserId.Returns((Guid?)null);
+
+        var expenseId = Guid.NewGuid();
+        var createReq = ValidCreateRequest();
+        var updateReq = ValidUpdateRequest();
+
+        var result = action switch
+        {
+            "get" => (await _controller.GetExpenses()).Result!,
+            "getById" => (await _controller.GetExpenseById(expenseId)).Result!,
+            "create" => (await _controller.CreateExpense(createReq)),
+            "update" => (await _controller.UpdateExpense(expenseId, updateReq)),
+            "delete" => (await _controller.DeleteExpense(expenseId)),
+            _ => throw new ArgumentOutOfRangeException(nameof(action), action, null),
+        };
+
+        result.Should().BeOfType<UnauthorizedResult>();
+    }
 }
