@@ -1,4 +1,5 @@
 using Expenses.Application.Dto;
+using Expenses.Application.Filtering;
 using Expenses.Application.Handlers;
 using Expenses.Application.Interfaces;
 using Expenses.Application.Validators;
@@ -126,5 +127,24 @@ public class ExpensesControllerTests
             .BeOfType<ValidationProblemDetails>()
             .Which.Errors.Keys.Should()
             .Contain("filter");
+    }
+
+    [Fact]
+    public async Task GetExpenses_ValidRequest_Returns200WithExpenses()
+    {
+        var expenses = new List<Expense>
+        {
+            NewExpense(description: "a"),
+            NewExpense(description: "b")
+        };
+
+        _repo.GetAllAsync(UserId, Arg.Any<ExpenseDateRange>()).Returns(expenses);
+
+        var result = await _controller.GetExpenses("week");
+
+        var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var items = ok.Value.Should().BeAssignableTo<IReadOnlyList<ExpenseResponseDto>>().Subject;
+        items.Should().HaveCount(2);
+        items.Select(dto => dto.Description).Should().BeEquivalentTo("a", "b");
     }
 }
