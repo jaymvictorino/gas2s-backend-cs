@@ -135,7 +135,7 @@ public class ExpensesControllerTests
         var expenses = new List<Expense>
         {
             NewExpense(description: "a"),
-            NewExpense(description: "b")
+            NewExpense(description: "b"),
         };
 
         _repo.GetAllAsync(UserId, Arg.Any<ExpenseDateRange>()).Returns(expenses);
@@ -146,5 +146,28 @@ public class ExpensesControllerTests
         var items = ok.Value.Should().BeAssignableTo<IReadOnlyList<ExpenseResponseDto>>().Subject;
         items.Should().HaveCount(2);
         items.Select(dto => dto.Description).Should().BeEquivalentTo("a", "b");
+    }
+
+    // ------------------------------------------------------------------
+    // GET /api/expenses/{id}
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task GetExpenseById_Found_Returns200OK()
+    {
+        var expense = NewExpense(description: "found");
+
+        _repo.GetByIdAsync(UserId, expense.Id).Returns(expense);
+
+        var result = await _controller.GetExpenseById(expense.Id);
+
+        result
+            .Result.Should()
+            .BeOfType<OkObjectResult>()
+            .Which.Value.Should()
+            .BeOfType<ExpenseResponseDto>()
+            .Which.Id.Should()
+            .Be(expense.Id);
+        await _repo.Received(1).GetByIdAsync(UserId, expense.Id);
     }
 }
