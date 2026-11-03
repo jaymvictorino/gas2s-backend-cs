@@ -181,4 +181,25 @@ public class ExpensesControllerTests
         result.Result.Should().BeOfType<NotFoundResult>();
         await _repo.Received(1).GetByIdAsync(UserId, Arg.Any<Guid>());
     }
+
+    // ------------------------------------------------------------------
+    // POST /api/expenses
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task CreateExpense_Valid_Returns201WithLocationOfNewExpenseId()
+    {
+        var createReq = ValidCreateRequest();
+
+        _repo.CreateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
+
+        var result = await _controller.CreateExpense(createReq);
+
+        var created = result.Should().BeOfType<CreatedAtActionResult>().Subject;
+        created.ActionName.Should().Be(nameof(ExpensesController.GetExpenseById));
+
+        var body = created.Value.Should().BeAssignableTo<ExpenseResponseDto>().Subject;
+
+        created.RouteValues!["id"].Should().Be(body.Id);
+    }
 }
