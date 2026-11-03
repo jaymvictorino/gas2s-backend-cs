@@ -170,4 +170,15 @@ public class ExpensesControllerTests
             .Be(expense.Id);
         await _repo.Received(1).GetByIdAsync(UserId, expense.Id);
     }
+
+    [Fact]
+    public async Task GetExpensesById_NotFound_Returns404NotFound()
+    {
+        _repo.GetByIdAsync(UserId, Arg.Any<Guid>()).Returns((Expense?)null);
+
+        var result = await _controller.GetExpenseById(Guid.NewGuid());
+
+        result.Result.Should().BeOfType<NotFoundResult>();
+        await _repo.Received(1).GetByIdAsync(UserId, Arg.Any<Guid>());
+    }
 }
