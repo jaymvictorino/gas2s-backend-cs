@@ -202,4 +202,19 @@ public class ExpensesControllerTests
 
         created.RouteValues!["id"].Should().Be(body.Id);
     }
+
+    [Fact]
+    public async Task CreateExpense_InvalidAmount_Returns400WithAmountError()
+    {
+        var badReq = ValidCreateRequest() with { Amount = -1m };
+
+        var result = await _controller.CreateExpense(badReq);
+
+        var problem = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        problem
+            .Value.Should()
+            .BeOfType<ValidationProblemDetails>()
+            .Which.Errors.Keys.Should()
+            .Contain("Amount");
+    }
 }
