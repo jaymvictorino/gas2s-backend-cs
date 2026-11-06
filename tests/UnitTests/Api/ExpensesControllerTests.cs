@@ -56,7 +56,7 @@ public class ExpensesControllerTests
     private static Expense NewExpense(
         Guid? userId = null,
         decimal amount = 100m,
-        ExpenseCategory category = ExpenseCategory.Groceries,
+        ExpenseCategory category = ExpenseCategory.Clothing,
         string? description = "test",
         DateOnly? date = null,
         TimeOnly? time = null
