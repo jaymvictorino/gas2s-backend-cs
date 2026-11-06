@@ -77,7 +77,7 @@ public class ExpensesControllerTests
 
     // UpdateExpenseRequestDto factory method
     private static UpdateExpenseRequestDto ValidUpdateRequest() =>
-        new(100m, ExpenseCategory.Groceries, "test", Today, new TimeOnly(12, 0));
+        new(100m, ExpenseCategory.Groceries, "updated", Today, new TimeOnly(12, 0));
 
     // ------------------------------------------------------------------
     // Authentication — every action must reject an unauthenticated request
