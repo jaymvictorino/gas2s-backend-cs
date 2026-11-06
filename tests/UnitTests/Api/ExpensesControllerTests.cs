@@ -217,4 +217,27 @@ public class ExpensesControllerTests
             .Which.Errors.Keys.Should()
             .Contain("Amount");
     }
+
+    // ------------------------------------------------------------------
+    // PUT /api/expenses/{id}
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task UpdateExpense_Found_Returns200WithUpdatedBody()
+    {
+        var expense = NewExpense();
+        _repo.GetByIdAsync(UserId, expense.Id).Returns(expense);
+        _repo.UpdateAsync(Arg.Any<Expense>()).Returns(info => info.Arg<Expense>());
+
+        var updateReq = ValidUpdateRequest();
+
+        var result = await _controller.UpdateExpense(expense.Id, updateReq);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        var item = ok.Value.Should().BeOfType<ExpenseResponseDto>().Subject;
+
+        item.Id.Should().Be(expense.Id);
+        item.Amount.Should().Be(updateReq.Amount);
+        item.Description.Should().Be(updateReq.Description);
+    }
 }
