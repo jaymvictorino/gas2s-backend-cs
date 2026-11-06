@@ -73,7 +73,7 @@ public class ExpensesControllerTests
 
     // CreateExpenseRequestDto factory method
     private static CreateExpenseRequestDto ValidCreateRequest() =>
-        new(100m, ExpenseCategory.Groceries, "test", Today, new TimeOnly(12, 0));
+        new(100m, ExpenseCategory.Groceries, "created", Today, new TimeOnly(12, 0));
 
     // UpdateExpenseRequestDto factory method
     private static UpdateExpenseRequestDto ValidUpdateRequest() =>
